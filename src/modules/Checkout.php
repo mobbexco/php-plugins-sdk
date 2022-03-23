@@ -94,7 +94,7 @@ class Checkout
                 'reference'    => $this->reference = $this->generateReference($id),
                 'description'  => 'Pedido #' . $id,
                 'intent'       => $this->settings['payment_mode'],
-                'test'         => $this->settings['test_mode'],
+                'test'         => $this->settings['test'],
                 'multicard'    => $this->settings['multicard'],
                 'multivendor'  => $this->settings['multivendor'],
                 'wallet'       => $this->settings['wallet'] && isset($customer['uid']),

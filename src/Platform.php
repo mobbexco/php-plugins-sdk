@@ -22,17 +22,18 @@ final class Platform
     public static $settings = [
         'api_key'      => null,
         'access_token' => null,
-        'test_mode'    => false,
+        'entity_data'  => null,
+        'test'         => false,
         'embed'        => true,
         'wallet'       => false,
         'payment_mode' => 'payment.v2',
         'multicard'    => false,
         'multivendor'  => false,
-        'title'        => null,
-        'logo'         => null,
         'theme'        => 'light',
-        'background'   => null,
         'color'        => null,
+        'background'   => null,
+        'header_name'  => null,
+        'header_logo'  => null,
     ];
 
     /** Hook execution callback */
