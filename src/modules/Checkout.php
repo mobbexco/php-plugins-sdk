@@ -44,6 +44,7 @@ class Checkout
      *     @type string|null $description
      *     @type string|null $image Image URL to show in checkout.
      *     @type string|null $entity Entity configured to receive payment for this item.
+     *     @type string|null $reference UID of related subscription. Use to enable subscription mode.
      * }
      * @param array $customer {
      *     @type string $name
@@ -72,8 +73,12 @@ class Checkout
     ) {
         $this->settings = \Mobbex\Platform::$settings;
 
-        // Get merchants from items
-        foreach ($items as $item) {
+        foreach ($items as $index => $item) {
+            // Set subscription type if corresponds
+            if (isset($item['reference']))
+                $items[$index]['type'] = 'subscription';
+
+            // Get merchants from items
             if (isset($item['entity']))
                 $merchants[] = ['uid' => $item['entity']];
         }
