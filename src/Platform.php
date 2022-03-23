@@ -12,6 +12,9 @@ final class Platform
     /** Version of Mobbex plugin */
     public static $version;
 
+    /** Domain name of current site */
+    public static $domain;
+
     /** Key-Value array with current extensions and their versions */
     public static $extensions = [];
 
@@ -40,14 +43,16 @@ final class Platform
      * 
      * @param string $name Name of current platform.
      * @param string $version Version of Mobbex plugin.
+     * @param string $domain Domain name or URL of current site.
      * @param array $extensions Current extensions and their versions.
      * @param array $settings Plugin settings values.
      * @param callable $hook Hook execution callback. @see \Mobbex\Platform::defaultHook()
      */
-    public static function init($name, $version, $extensions = [], $settings = [], $hook = null)
+    public static function init($name, $version, $domain, $extensions = [], $settings = [], $hook = null)
     {
         self::$name       = $name;
         self::$version    = $version;
+        self::$domain     = str_replace('www.', '', parse_url($domain, PHP_URL_HOST) ?: $domain);
         self::$extensions = $extensions;
         self::$settings   = array_merge(self::$settings, $settings);
         self::$hook       = $hook ?: [self::class, 'defaultHook'];
