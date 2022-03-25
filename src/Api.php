@@ -2,8 +2,6 @@
 
 namespace Mobbex;
 
-defined('ABSPATH') || exit;
-
 class Api
 {
     public static $ready = false;

@@ -2,8 +2,6 @@
 
 namespace Mobbex;
 
-defined('ABSPATH') || exit;
-
 class Checkout
 {
     /** Platform unique identifier for payment */
@@ -73,10 +71,10 @@ class Checkout
     ) {
         $this->settings = \Mobbex\Platform::$settings;
 
-        foreach ($items as $index => $item) {
+        foreach ($items as &$item) {
             // Set subscription type if corresponds
             if (isset($item['reference']))
-                $items[$index]['type'] = 'subscription';
+                $item['type'] = 'subscription';
 
             // Get merchants from items
             if (isset($item['entity']))

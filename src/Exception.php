@@ -2,8 +2,6 @@
 
 namespace Mobbex;
 
-defined('ABSPATH') || exit;
-
 class Exception extends \Exception
 {
     public $data = '';

@@ -2,8 +2,6 @@
 
 namespace Mobbex;
 
-defined('ABSPATH') || exit;
-
 final class Platform
 {
     /** Name of current platform */

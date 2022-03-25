@@ -2,8 +2,6 @@
 
 namespace Mobbex;
 
-defined('ABSPATH') || exit;
-
 class Subscriber
 {
     /** Platform identifier for subscriber */
