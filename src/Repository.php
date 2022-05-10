@@ -8,7 +8,7 @@ final class Repository
      * Get sources from Mobbex.
      * 
      * @param int|float $total Amount to calculate payment methods.
-     * @param array $installments Use +uid:<uid> to include and -<reference> to exclude.
+     * @param string[] $installments Use +uid:<uid> to include and -<reference> to exclude.
      * 
      * @return array Mobbex raw response.
      */
@@ -44,7 +44,7 @@ final class Repository
     /**
      * Get entity data from Mobbex or db if possible.
      * 
-     * @return string[] Mobbex raw response.
+     * @return array Mobbex raw response.
      */
     public static function getEntity()
     {

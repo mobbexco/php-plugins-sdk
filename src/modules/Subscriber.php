@@ -1,6 +1,6 @@
 <?php
 
-namespace Mobbex;
+namespace Mobbex\Modules;
 
 class Subscriber
 {

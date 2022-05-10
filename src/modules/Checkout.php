@@ -1,6 +1,6 @@
 <?php
 
-namespace Mobbex;
+namespace Mobbex\Modules;
 
 class Checkout
 {
@@ -35,7 +35,7 @@ class Checkout
      * @param int|string $total Amount to pay.
      * @param string $returnUrl Post-payment redirect URL.
      * @param string $webhookUrl URL that recieve the Mobbex payment response.
-     * @param array $installments
+     * @param string[] $installments Use +uid:<uid> to include and -<reference> to exclude.
      * @param array $items {
      *     @type int|string $total Total amount to pay for this item.
      *     @type int $quantity Quantity of items. Does not modify the displayed total.
