@@ -24,7 +24,7 @@
         }
     },
     "scripts": {
-        "test": "./vendor/bin/phpunit tests"
+        "test": "./vendor/bin/phpunit --testsuite demo"
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "stable"
 }

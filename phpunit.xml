@@ -4,8 +4,10 @@
     verbose="true"
     stopOnFailure="false">
     <testsuites>
-        <testsuite name="Demo Suite">
-            <directory>tests</directory>
+        <testsuite name="demo">
+            <file>./tests/SubscriptionTest.php</file>
+            <file>./tests/SubscriberTest.php</file>
+            <file>./tests/CheckoutTest.php</file>
         </testsuite>
     </testsuites>
     <php>
@@ -13,6 +15,5 @@
         <env name="API_KEY" value="zJ8LFTBX6Ba8D611e9io13fDZAwj0QmKO1Hn1yIj"/>
         <env name="ACESS_TOKEN" value="d31f0721-2f85-44e7-bcc6-15e19d1a53cc"/>
         <env name="MERCHANT_UID" value="H1rJEXyr"/>
-        <env name="SUBSCRIPTION_UID" value="1HXFXX5F2AGHBKSNZS"/>
     </php>
 </phpunit>

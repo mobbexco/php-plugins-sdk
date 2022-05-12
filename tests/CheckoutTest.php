@@ -108,7 +108,10 @@ class CheckoutTest extends \PHPUnit\Framework\TestCase
         $this->assertNotEmpty($checkout->url);
     }
 
-    public function testCanBeCreatedUsingSubscriptionItems()
+    /**
+     * @depends Mobbex\Tests\SubscriptionTest::testCanBeCreatedFromSimpleData
+     */
+    public function testCanBeCreatedUsingSubscriptionItems($subscription)
     {
         $checkout = new \Mobbex\Modules\Checkout(
             rand(1, 10000),
@@ -124,10 +127,10 @@ class CheckoutTest extends \PHPUnit\Framework\TestCase
                 ],
                 [
                     'total'       => 50,
-                    'quantity'    => 4,
+                    'quantity'    => 1,
                     'description' => 'Item 2 (with subscription)',
                     'image'       => $_ENV['SERVER_URL'] . '/img/items/2.jpg',
-                    'reference'   => $_ENV['SUBSCRIPTION_UID'],
+                    'reference'   => $subscription->uid,
                 ],
             ],
             [
