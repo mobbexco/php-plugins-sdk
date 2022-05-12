@@ -2,7 +2,6 @@
     "name": "mobbexco/php-plugins-sdk",
     "type": "library",
     "description": "Mobbex SDK for PHP plugins",
-    "version": "1.0.0",
     "license": "MIT",
     "authors": [
         {

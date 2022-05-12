@@ -104,21 +104,21 @@ class Checkout
                 'options'      => [
                     'embed'    => $this->settings['embed'],
                     'domain'   => \Mobbex\Platform::$domain,
-                    'theme'    => [
-                        'type'       => $this->settings['theme'],
-                        'background' => $this->settings['background'],
-                        'header'     => [
-                            'name' => $this->settings['header_name'],
-                            'logo' => $this->settings['header_logo'],
-                        ],
-                        'colors'     => [
-                            'primary' => $this->settings['color'],
-                        ]
-                    ],
                     'platform' => \Mobbex\Platform::toArray(),
                     'redirect' => [
                         'success' => true,
                         'failure' => false,
+                    ],
+                    'theme'    => [
+                        'type'       => $this->settings['theme'],
+                        'background' => $this->settings['background'],
+                        'colors'     => [
+                            'primary' => $this->settings['color'],
+                        ],
+                        'header'     => [
+                            'name' => $this->settings['header_name'],
+                            'logo' => $this->settings['header_logo'],
+                        ],
                     ],
                 ],
             ], $id)
