@@ -12,17 +12,14 @@ final class Repository
      * 
      * @return array Mobbex raw response.
      */
-    public static function getSources($total = null, $installments = [])
+    public function getSources($total = null, $installments = [])
     {
-        $entity = self::getEntity();
 
-        if (empty($entity['countryReference']) || empty($entity['tax_id']))
-            return [];
+        $query = $this->getInstallmentsQuery($total, $installments);
 
         return \Mobbex\Api::request([
-            'method' => 'POST',
-            'uri'    => "sources/list/$entity[countryReference]/$entity[tax_id]" . ($total ? "?total=$total" : ''),
-            'body'   => compact('installments'),
+            'method' => 'GET',
+            'uri'    => "sources" . ($query ? "?$query" : '')
         ]) ?: [];
     }
 
@@ -33,7 +30,7 @@ final class Repository
      * 
      * @return array Mobbex raw response.
      */
-    public static function getSourcesAdvanced($rule = 'externalMatch')
+    public function getSourcesAdvanced($rule = 'externalMatch')
     {
         return \Mobbex\Api::request([
             'method' => 'GET',
@@ -42,21 +39,91 @@ final class Repository
     }
 
     /**
-     * Get entity data from Mobbex or db if possible.
-     * 
-     * @return array Mobbex raw response.
+     * Returns a query param with the installments of the product.
+     * @param int $total
+     * @param array $installments
+     * @return string $query
      */
-    public static function getEntity()
+    public function getInstallmentsQuery($total, $installments = [])
     {
-        // First, try to get from settings
-        $entity = \Mobbex\Platform::$settings['entity_data'];
+        // Build query params and replace special chars
+        return preg_replace('/%5B[0-9]+%5D/simU', '%5B%5D', http_build_query(compact('total', 'installments')));
+    }
 
-        if ($entity)
-            return is_string($entity) ? json_decode($entity, true) : $entity;
+    /**
+     * Retrieve plans filter fields data for product/category settings.
+     * 
+     * @param int|string $id
+     * @param string $catalogType
+     * 
+     * @return array
+     */
+    public function getPlansFilterFields($id, $checkedCommonPlans = [], $checkedAdvancedPlans = [])
+    {
+        $commonFields = $advancedFields = $sourceNames = [];
 
-        return \Mobbex\Api::request([
-            'method' => 'GET',
-            'uri'    => 'entity/validate',
-        ]);
+        // Create common plan fields
+        foreach ($this->getSources() as $source) {
+            // Only if have installments
+            if (empty($source['installments']['list']))
+            continue;
+
+            // Create field array data
+            foreach ($source['installments']['list'] as $plan) {
+                $commonFields[$plan['reference']] = [
+                    'id'    => 'common_plan_' . $plan['reference'],
+                    'value' => !in_array($plan['reference'], $checkedCommonPlans),
+                    'label' => $plan['name'] ?: $plan['description'],
+                ];
+            }
+        }
+
+        // Create plan with advanced rules fields
+        foreach ($this->getSourcesAdvanced() as $source) {
+            // Only if have installments
+            if (empty($source['installments']))
+            continue;
+
+            // Save source name
+            $sourceNames[$source['source']['reference']] = $source['source']['name'];
+
+            // Create field array data
+            foreach ($source['installments'] as $plan) {
+                $advancedFields[$source['source']['reference']][] = [
+                    'id'      => 'advanced_plan_' . $plan['uid'],
+                    'value'   => in_array($plan['uid'], $checkedAdvancedPlans),
+                    'label'   => $plan['name'] ?: $plan['description'],
+                ];
+            }
+        }
+
+        return compact('commonFields', 'advancedFields', 'sourceNames');
+    }
+
+    /**
+     * Retrieve installments checked on plans filter of each item.
+     * 
+     * @param array $items
+     * @param array $common_plans
+     * @param array $advanced_plans
+     * 
+     * @return array
+     */
+    public function getInstallments($items, $common_plans, $advanced_plans)
+    {
+        $installments = [];
+
+        // Add inactive (common) plans to installments
+        foreach ($common_plans as $plan)
+            $installments[] = '-' . $plan;
+
+        // Add active (advanced) plans to installments only if the plan is active on all products
+        foreach (array_count_values($advanced_plans) as $plan => $reps) {
+            if ($reps == count($items))
+                $installments[] = '+uid:' . $plan;
+        }
+
+        // Remove duplicated plans and return
+        return array_values(array_unique($installments));
     }
 }
