@@ -12,10 +12,10 @@ final class Repository
      * 
      * @return array Mobbex raw response.
      */
-    public function getSources($total = null, $installments = [])
+    public static function getSources($total = null, $installments = [])
     {
 
-        $query = $this->getInstallmentsQuery($total, $installments);
+        $query = self::getInstallmentsQuery($total, $installments);
 
         return \Mobbex\Api::request([
             'method' => 'GET',
@@ -30,7 +30,7 @@ final class Repository
      * 
      * @return array Mobbex raw response.
      */
-    public function getSourcesAdvanced($rule = 'externalMatch')
+    public static function getSourcesAdvanced($rule = 'externalMatch')
     {
         return \Mobbex\Api::request([
             'method' => 'GET',
@@ -44,7 +44,7 @@ final class Repository
      * @param array $installments
      * @return string $query
      */
-    public function getInstallmentsQuery($total, $installments = [])
+    public static function getInstallmentsQuery($total, $installments = [])
     {
         // Build query params and replace special chars
         return preg_replace('/%5B[0-9]+%5D/simU', '%5B%5D', http_build_query(compact('total', 'installments')));
@@ -58,12 +58,12 @@ final class Repository
      * 
      * @return array
      */
-    public function getPlansFilterFields($id, $checkedCommonPlans = [], $checkedAdvancedPlans = [])
+    public static function getPlansFilterFields($id, $checkedCommonPlans = [], $checkedAdvancedPlans = [])
     {
         $commonFields = $advancedFields = $sourceNames = [];
 
         // Create common plan fields
-        foreach ($this->getSources() as $source) {
+        foreach (self::getSources() as $source) {
             // Only if have installments
             if (empty($source['installments']['list']))
             continue;
@@ -79,7 +79,7 @@ final class Repository
         }
 
         // Create plan with advanced rules fields
-        foreach ($this->getSourcesAdvanced() as $source) {
+        foreach (self::getSourcesAdvanced() as $source) {
             // Only if have installments
             if (empty($source['installments']))
             continue;
@@ -109,7 +109,7 @@ final class Repository
      * 
      * @return array
      */
-    public function getInstallments($items, $common_plans, $advanced_plans)
+    public static function getInstallments($items, $common_plans, $advanced_plans)
     {
         $installments = [];
 
