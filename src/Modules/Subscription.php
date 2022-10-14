@@ -60,7 +60,7 @@ class Subscription
         $this->setResponse(\Mobbex\Api::request([
             'uri'    => 'subscriptions/' . $uid,
             'method' => 'POST',
-            'body'   => (\Mobbex\Platform::$hook)($hookName, true, [
+            'body'   => \Mobbex\Platform::hook($hookName, true, [
                 'total'       => $total,
                 'type'        => $type,
                 'webhook'     => $webhookUrl,

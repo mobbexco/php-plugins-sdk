@@ -85,7 +85,7 @@ class Checkout
         $this->setResponse(\Mobbex\Api::request([
             'uri'    => 'checkout',
             'method' => 'POST',
-            'body'   => (\Mobbex\Platform::$hook)($hookName, true, [
+            'body'   => \Mobbex\Platform::hook($hookName, true, [
                 'total'        => $total,
                 'webhook'      => $webhookUrl,
                 'return_url'   => $returnUrl,
