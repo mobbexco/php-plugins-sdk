@@ -54,7 +54,7 @@ class Subscriber
         $this->setResponse(\Mobbex\Api::request([
             'uri'    => 'subscriptions/' . $subscriptionUid . '/subscriber/' . $uid,
             'method' => 'POST',
-            'body'   => (\Mobbex\Platform::$hook)($hookName, true, [
+            'body'   => \Mobbex\Platform::hook($hookName, true, [
                 'total'     => $total,
                 'reference' => $this->reference = (string) $reference,
                 'test'      => $this->settings['test'],
