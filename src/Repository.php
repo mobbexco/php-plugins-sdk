@@ -61,7 +61,7 @@ final class Repository
     }
 
     /**
-     * Converts the WooCommerce country codes to 3-letter ISO codes.
+     * Converts 2-letter country codes to 3-letter ISO codes.
      * 
      * @param string $code 2-Letter ISO code.
      * 
