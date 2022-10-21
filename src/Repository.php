@@ -54,7 +54,8 @@ final class Repository
      * Retrieve plans filter fields data for product/category settings.
      * 
      * @param int|string $id
-     * @param string $catalogType
+     * @param string[] $checkedCommonPlans
+     * @param string[] $checkedAdvancedPlans
      * 
      * @return array
      */
@@ -104,21 +105,21 @@ final class Repository
      * Retrieve installments checked on plans filter of each item.
      * 
      * @param array $items
-     * @param array $common_plans
-     * @param array $advanced_plans
+     * @param array $commonPlans
+     * @param array $advancedPlans
      * 
      * @return array
      */
-    public static function getInstallments($items, $common_plans, $advanced_plans)
+    public static function getInstallments($items, $commonPlans, $advancedPlans)
     {
         $installments = [];
 
         // Add inactive (common) plans to installments
-        foreach ($common_plans as $plan)
+        foreach ($commonPlans as $plan)
             $installments[] = '-' . $plan;
 
         // Add active (advanced) plans to installments only if the plan is active on all products
-        foreach (array_count_values($advanced_plans) as $plan => $reps) {
+        foreach (array_count_values($advancedPlans) as $plan => $reps) {
             if ($reps == count($items))
                 $installments[] = '+uid:' . $plan;
         }
