@@ -51,16 +51,18 @@ class Checkout
      *     @type string|null $phone
      *     @type string|int|null $uid
      * }
-     * @param array $addresses {
-     *  [
-     *      @type string|null $address Street name.
-     *      @type string|null $addressNumber House number.
-     *      @type string|null $zipCode Postal|ZIP code.
-     *      @type string|null $state
+     * @param array $addresses [
+     *  {
+     *      @type string|null $type Address Type.
      *      @type string|null $country Country ISO 3166-1 alpha-3 code.
-     *      @type string|null $addressNotes
-     *  ]
-     * }
+     *      @type string|null $state 
+     *      @type string|null $city
+     *      @type string|null $zipCode Postal|ZIP code.
+     *      @type string|null $street
+     *      @type string|null $streetNumber
+     *      @type string|null $streetNotes
+     *  }
+     * ]
      * @param string $hookName Name of hook to execute when body is filtered.
      */
     public function __construct(
