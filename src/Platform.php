@@ -45,7 +45,7 @@ final class Platform
      * @param string $domain Domain name or URL of current site.
      * @param array $extensions Current extensions and their versions.
      * @param array $settings Plugin settings values.
-     * @param callable $hook Hook execution callback. @see \Mobbex\Platform::defaultHook()
+     * @param callable $hook Hook execution callback. @see Description at \Mobbex\Platform::hook()
      */
     public static function init($name, $version, $domain, $extensions = [], $settings = [], $hook = null)
     {
@@ -54,7 +54,7 @@ final class Platform
         self::$domain     = str_replace('www.', '', parse_url($domain, PHP_URL_HOST) ?: $domain);
         self::$extensions = $extensions;
         self::$settings   = array_merge(self::$settings, $settings);
-        self::$hook       = $hook ?: [self::class, 'defaultHook'];
+        self::$hook       = $hook;
     }
 
     /**
@@ -82,7 +82,7 @@ final class Platform
     }
 
     /**
-     * Default callback and description of \Mobbex\Platform::$hook callable.
+     * Register a hook using the callback passed on construct.
      * 
      * @param string $name The hook name (in camel case).
      * @param bool $filter Filter first arg in each execution.
@@ -90,8 +90,11 @@ final class Platform
      * 
      * @return mixed Last execution response or value filtered. Null on exceptions.
      */
-    public static function defaultHook($name, $filter, ...$args)
+    public static function hook($name, $filter, ...$args)
     {
+        if (is_callable(self::$hook))
+            return call_user_func(self::$hook, $name, $filter, ...$args);
+
         return $filter ? $args[0] : false;
     }
 }
