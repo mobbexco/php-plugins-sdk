@@ -50,13 +50,19 @@ class Checkout
      *     @type string $identification
      *     @type string|null $phone
      *     @type string|int|null $uid
-     *     @type string|null $address Street name.
-     *     @type string|null $addressNumber House number.
-     *     @type string|null $zipCode Postal|ZIP code.
-     *     @type string|null $state
-     *     @type string|null $country Country ISO 3166-1 alpha-3 code.
-     *     @type string|null $addressNotes
      * }
+     * @param array $addresses [
+     *  {
+     *      @type string|null $type Address Type.
+     *      @type string|null $country Country ISO 3166-1 alpha-3 code.
+     *      @type string|null $state 
+     *      @type string|null $city
+     *      @type string|null $zipCode Postal|ZIP code.
+     *      @type string|null $street
+     *      @type string|null $streetNumber
+     *      @type string|null $streetNotes
+     *  }
+     * ]
      * @param string $hookName Name of hook to execute when body is filtered.
      */
     public function __construct(
@@ -67,6 +73,7 @@ class Checkout
         $items = [],
         $installments = [],
         $customer = [],
+        $addresses = [],
         $hookName = 'mobbexCheckoutRequest'
     ) {
         $this->settings = \Mobbex\Platform::$settings;
@@ -92,17 +99,18 @@ class Checkout
                 'reference'    => $this->reference = $this->generateReference($id),
                 'description'  => 'Pedido #' . $id,
                 'intent'       => $this->settings['payment_mode'],
-                'test'         => $this->settings['test'],
-                'multicard'    => $this->settings['multicard'],
+                'test'         => (bool) $this->settings['test'],
+                'multicard'    => (bool) $this->settings['multicard'],
                 'multivendor'  => $this->settings['multivendor'],
-                'wallet'       => $this->settings['wallet'] && isset($customer['uid']),
+                'wallet'       => (bool) $this->settings['wallet'] && isset($customer['uid']),
                 'timeout'      => 5,
                 'items'        => $items,
                 'merchants'    => isset($merchants) ? $merchants : [],
                 'installments' => $installments,
                 'customer'     => $customer,
+                'addresses'    => $addresses,
                 'options'      => [
-                    'embed'    => $this->settings['embed'],
+                    'embed'    => (bool) $this->settings['embed'],
                     'domain'   => \Mobbex\Platform::$domain,
                     'platform' => \Mobbex\Platform::toArray(),
                     'redirect' => [

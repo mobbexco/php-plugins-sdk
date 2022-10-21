@@ -127,4 +127,18 @@ final class Repository
         // Remove duplicated plans and return
         return array_values(array_unique($installments));
     }
+
+    /**
+     * Converts 2-letter country codes to 3-letter ISO codes.
+     * 
+     * @param string $code 2-Letter ISO code.
+     * 
+     * @return string|null
+     */
+    public function convertCountryCode($code)
+    {
+        $countries = include ('iso-3166/country-codes.php') ?: [];
+
+        return isset($countries[$code]) ? $countries[$code] : null;
+    }
 }
