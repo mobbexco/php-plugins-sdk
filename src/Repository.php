@@ -62,7 +62,7 @@ final class Repository
     public static function getPlansFilterFields($id, $checkedCommonPlans = [], $checkedAdvancedPlans = [])
     {
         $commonFields = $advancedFields = $sourceNames = [];
-
+        
         // Create common plan fields
         foreach (self::getSources() as $source) {
             // Only if have installments
@@ -135,7 +135,7 @@ final class Repository
      * 
      * @return string|null
      */
-    public function convertCountryCode($code)
+    public static function convertCountryCode($code)
     {
         $countries = include ('iso-3166/country-codes.php') ?: [];
 
