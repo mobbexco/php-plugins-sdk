@@ -88,8 +88,6 @@ class Checkout
                 $merchants[] = ['uid' => $item['entity']];
         }
 
-        $this->return_url = $returnUrl;
-
         // Make request and set response data as properties
         $this->setResponse(\Mobbex\Api::request([
             'uri'    => 'checkout',
@@ -143,8 +141,6 @@ class Checkout
     public function setResponse($response)
     {
         $this->response = $response;
-        $this->response['return_url'] = $this->return_url;
-
         $this->id       = isset($this->response['id'])              ? $this->response['id']              : null;
         $this->url      = isset($this->response['url'])             ? $this->response['url']             : null;
         $this->methods  = isset($this->response['paymentMethods'])  ? $this->response['paymentMethods']  : [];
