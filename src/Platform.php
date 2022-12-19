@@ -32,6 +32,7 @@ final class Platform
         'background'   => null,
         'header_name'  => null,
         'header_logo'  => null,
+        'timeout'      => 5,
     ];
 
     /** Hook execution callback */

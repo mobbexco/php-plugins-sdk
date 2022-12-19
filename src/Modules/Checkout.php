@@ -103,7 +103,7 @@ class Checkout
                 'multicard'    => (bool) $this->settings['multicard'],
                 'multivendor'  => $this->settings['multivendor'],
                 'wallet'       => (bool) $this->settings['wallet'] && isset($customer['uid']),
-                'timeout'      => isset($this->settings['timeout']) ? (int) $this->settings['timeout'] : 5,
+                'timeout'      => (int) $this->settings['timeout'],
                 'items'        => $items,
                 'merchants'    => isset($merchants) ? $merchants : [],
                 'installments' => $installments,
