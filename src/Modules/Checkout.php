@@ -159,6 +159,10 @@ class Checkout
             \Mobbex\Platform::$name . '_id:' . $id,
         ];
 
+        // Add site id
+        if (!empty($this->settings['site_id']))
+            $reference[] = 'site_id:' . str_replace(' ', '-', trim($this->settings['site_id']));
+
         // Add reseller id
         if (!empty($this->settings['reseller_id']))
             $reference[] = 'reseller:' . str_replace(' ', '-', trim($this->settings['reseller_id']));
