@@ -39,6 +39,9 @@ final class Platform
     /** Hook execution callback */
     public static $hook;
 
+    /** Log execution callback */
+    public static $log;
+
     /**
      * Set current platform information.
      * 
@@ -48,8 +51,9 @@ final class Platform
      * @param array $extensions Current extensions and their versions.
      * @param array $settings Plugin settings values.
      * @param callable $hook Hook execution callback. @see Description at \Mobbex\Platform::hook()
+     * @param callable $log Log execution callback. @see Description at \Mobbex\Platform::log()
      */
-    public static function init($name, $version, $domain, $extensions = [], $settings = [], $hook = null)
+    public static function init($name, $version, $domain, $extensions = [], $settings = [], $hook = null, $log = null)
     {
         self::$name       = $name;
         self::$version    = $version;
@@ -57,6 +61,7 @@ final class Platform
         self::$extensions = $extensions;
         self::$settings   = array_merge(self::$settings, $settings);
         self::$hook       = $hook;
+        self::$log        = $log;
     }
 
     /**
@@ -98,5 +103,21 @@ final class Platform
             return call_user_func(self::$hook, $name, $filter, ...$args);
 
         return $filter ? $args[0] : false;
+    }
+
+    /**
+     * Make logs with given data.
+     * Mode debug: Log data if debug mode is active
+     * Mode error: Always log data.
+     * Mode fatal: Always log data & stop code execution.
+     * 
+     * @param string $mode debug | error | fatal    
+     * @param string $message
+     * @param array $data
+     */
+    public static function log($mode, $message, $data = [])
+    {
+        if (is_callable(self::$log))
+            return call_user_func(self::$log, $mode, $message, $data);
     }
 }

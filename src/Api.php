@@ -45,6 +45,9 @@ class Api
         if (empty($data['method']) || empty($data['uri']))
             throw new \Mobbex\Exception('Mobbex request error: Missing arguments', 0, $data);
 
+        //Log request data
+        \Mobbex\Platform::log('debug', 'Api > Request | Request Data:', $data);
+
         $curl = curl_init();
 
         curl_setopt_array($curl, [
