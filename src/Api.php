@@ -59,13 +59,12 @@ class Api
         ]);
 
         $response = curl_exec($curl);
-        $error    = curl_error($curl);
+
+        // Throw curl errors before close session
+        if (curl_error($curl))
+            throw new \Mobbex\Exception('cURL error in Mobbex request: ' . curl_error($curl), curl_errno($curl), $data);
 
         curl_close($curl);
-
-        // Throw curl errors
-        if ($error)
-            throw new \Mobbex\Exception('Curl error in Mobbex request #:' . $error, curl_errno($curl), $data);
 
         $result = json_decode($response, true);
 
