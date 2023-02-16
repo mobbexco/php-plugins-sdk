@@ -63,6 +63,7 @@ class Checkout
      *      @type string|null $streetNotes
      *  }
      * ]
+     * @param string $webhooksType Type of webhooks to send. Can be "all" | "none" | "final" | "intermediateAndFinal"
      * @param string $hookName Name of hook to execute when body is filtered.
      */
     public function __construct(
@@ -74,6 +75,7 @@ class Checkout
         $installments = [],
         $customer = [],
         $addresses = [],
+        $webhooksType = 'all',
         $hookName = 'mobbexCheckoutRequest'
     ) {
         $this->settings = \Mobbex\Platform::$settings;
@@ -109,6 +111,7 @@ class Checkout
                 'installments' => $installments,
                 'customer'     => $customer,
                 'addresses'    => $addresses,
+                'webhooksType' => $webhooksType,
                 'options'      => [
                     'embed'    => (bool) $this->settings['embed'],
                     'domain'   => \Mobbex\Platform::$domain,
