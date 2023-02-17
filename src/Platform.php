@@ -39,6 +39,18 @@ final class Platform
     /** Hook execution callback */
     public static $hook;
 
+    /** Log execution callback */
+    public static $log;
+
+    /** Only log if debug mode is enabled */
+    const LOG_MODE_DEBUG = 'debug';
+
+    /** Log and continue execution */
+    const LOG_MODE_ERROR = 'error';
+
+    /** Log and stop execution printing message */
+    const LOG_MODE_FATAL = 'fatal';
+
     /**
      * Set current platform information.
      * 
@@ -48,8 +60,9 @@ final class Platform
      * @param array $extensions Current extensions and their versions.
      * @param array $settings Plugin settings values.
      * @param callable $hook Hook execution callback. @see Description at \Mobbex\Platform::hook()
+     * @param callable $log Log execution callback. @see Description at \Mobbex\Platform::log()
      */
-    public static function init($name, $version, $domain, $extensions = [], $settings = [], $hook = null)
+    public static function init($name, $version, $domain, $extensions = [], $settings = [], $hook = null, $log = null)
     {
         self::$name       = $name;
         self::$version    = $version;
@@ -57,6 +70,7 @@ final class Platform
         self::$extensions = $extensions;
         self::$settings   = array_merge(self::$settings, $settings);
         self::$hook       = $hook;
+        self::$log        = $log;
     }
 
     /**
@@ -98,5 +112,18 @@ final class Platform
             return call_user_func(self::$hook, $name, $filter, ...$args);
 
         return $filter ? $args[0] : false;
+    }
+
+    /**
+     * Log a message with the given data.
+     * 
+     * @param string $mode @see \Mobbex\Platform::LOG_MODE_*
+     * @param string $message Main log message.
+     * @param array $data Optional. All data related.
+     */
+    public static function log($mode, $message, $data = [])
+    {
+        if (is_callable(self::$log))
+            call_user_func(self::$log, $mode, $message, $data);
     }
 }
