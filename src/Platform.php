@@ -42,6 +42,15 @@ final class Platform
     /** Log execution callback */
     public static $log;
 
+    /** Only log if debug mode is enabled */
+    const LOG_MODE_DEBUG = 'debug';
+
+    /** Log and continue execution */
+    const LOG_MODE_ERROR = 'error';
+
+    /** Log and stop execution printing message */
+    const LOG_MODE_FATAL = 'fatal';
+
     /**
      * Set current platform information.
      * 
@@ -106,18 +115,15 @@ final class Platform
     }
 
     /**
-     * Make logs with given data.
-     * Mode debug: Log data if debug mode is active
-     * Mode error: Always log data.
-     * Mode fatal: Always log data & stop code execution.
+     * Log a message with the given data.
      * 
-     * @param string $mode debug | error | fatal    
-     * @param string $message
-     * @param array $data
+     * @param string $mode @see \Mobbex\Platform::LOG_MODE_*
+     * @param string $message Main log message.
+     * @param array $data Optional. All data related.
      */
     public static function log($mode, $message, $data = [])
     {
         if (is_callable(self::$log))
-            return call_user_func(self::$log, $mode, $message, $data);
+            call_user_func(self::$log, $mode, $message, $data);
     }
 }
