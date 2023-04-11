@@ -67,20 +67,18 @@ final class Platform
      */
     public static function init($name, $version, $domain, $extensions = [], $settings = [], $hook = null, $log = null)
     {
-        self::$name        = $name;
-        self::$version     = $version;
-        self::$domain      = str_replace('www.', '', parse_url($domain, PHP_URL_HOST) ?: $domain);
-        self::$extensions  = $extensions;
-        self::$settings    = array_merge(self::$settings, $settings);
-        self::$hook        = $hook;
-        self::$log         = $log;
+        self::$name       = $name;
+        self::$version    = $version;
+        self::$domain     = str_replace('www.', '', parse_url($domain, PHP_URL_HOST) ?: $domain);
+        self::$extensions = $extensions;
+        self::$settings   = array_merge(self::$settings, $settings);
+        self::$hook       = $hook;
+        self::$log        = $log;
     }
 
     /**
      * Load plugin models to sdk.
-     * 
      * @param Mobbex\Model\AbstractCache $cache Mobbex cache model.
-     * 
      */
     public static function loadModels($cache)
     {

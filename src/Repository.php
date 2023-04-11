@@ -15,21 +15,21 @@ final class Repository
     public static function getSources($total = null, $installments = [])
     {
         //try to get sources from cache memory
-        $key = 'mobbex_sources_' . md5(($total ?: '') . ($installments ? json_encode($installments) : ''));
+        $key = 'mobbex_sources_' . md5(\Mobbex\Platform::$settings['api_key'] . \Mobbex\Platform::$settings['access_token'] . ($total ?: '') . ($installments ? json_encode($installments) : ''));
         
-        if(Platform::$cache::get($key))
-            return Platform::$cache::get($key);
+        if(\Mobbex\Platform::$cache::get($key))
+            return \Mobbex\Platform::$cache::get($key);
 
         //get sources from mobbex API
         $query = self::getInstallmentsQuery($total, $installments);
 
-        $sources = Api::request([
+        $sources = \Mobbex\Api::request([
             'method' => 'GET',
             'uri'    => "sources" . ($query ? "?$query" : '')
         ]) ?: [];
 
         if($sources)
-            Platform::$cache::save($key, json_encode($sources));
+            \Mobbex\Platform::$cache::save($key, json_encode($sources));
         
         return $sources;
     }

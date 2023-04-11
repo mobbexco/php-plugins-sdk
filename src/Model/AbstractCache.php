@@ -5,25 +5,26 @@ namespace Mobbex\Model;
 abstract class AbstractCache
 {
     /**
-     *  @var string 
      * Identifier key of the stored data. 
+     * @var string 
      */
     public $key;
     
     /** 
-     * @var string 
      * Stored data.
+     * @var string 
      */
     public $data;
     
     /** 
-     * @var timestamp
      * Stored date. 
+     * @var string
      */
     public $date;
 
     /**
-     * @var array Table structure definition.
+     * Table structure definition.
+     * @var array 
      */
     public static $definition = [
         'table'   => 'mobbex_cache',
