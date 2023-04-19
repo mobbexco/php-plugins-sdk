@@ -141,4 +141,38 @@ final class Repository
 
         return isset($countries[$code]) ? $countries[$code] : null;
     }
+
+    /**
+     * Generate a token using current credentials configured.
+     * 
+     * @return string 
+     */
+    public static function generateToken()
+    {
+        $api_key = \Mobbex\Platform::$settings['api_key'];
+        $access_token = \Mobbex\Platform::$settings['access_token'];
+
+        return password_hash(
+            "{$api_key}|{$access_token}",
+            PASSWORD_DEFAULT
+        );
+    }
+
+    /**
+     * Validate a token generated from credentials configured.
+     * 
+     * @param mixed $token
+     * 
+     * @return bool True if token is valid.
+     */
+    public static function validateToken($token)
+    {
+        $api_key = \Mobbex\Platform::$settings['api_key'];
+        $access_token = \Mobbex\Platform::$settings['access_token'];
+
+        return password_verify(
+            "{$api_key}|{$access_token}",
+            $token
+        );
+    }
 }
