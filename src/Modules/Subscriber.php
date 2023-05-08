@@ -57,7 +57,7 @@ class Subscriber
             'body'   => \Mobbex\Platform::hook($hookName, true, [
                 'total'     => $total,
                 'reference' => $this->reference = (string) $reference,
-                'test'      => $this->settings['test'],
+                'test'      => (bool) $this->settings['test'],
                 'startDate' => [
                     'day'   => date('d', strtotime($startDate)),
                     'month' => date('m', strtotime($startDate)),
