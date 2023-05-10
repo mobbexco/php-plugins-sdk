@@ -36,7 +36,7 @@ final class Platform
         'site_id'      => null,
     ];
 
-    /** @var Mobbex\Model\AbstractCache */
+    /** @var \Mobbex\Model\AbstractCache */
     public static $cache;
 
     /** Hook execution callback */
@@ -78,7 +78,8 @@ final class Platform
 
     /**
      * Load plugin models to sdk.
-     * @param Mobbex\Model\AbstractCache $cache Mobbex cache model.
+     * 
+     * @param \Mobbex\Model\AbstractCache $cache Mobbex cache model.
      */
     public static function loadModels($cache)
     {
