@@ -149,11 +149,11 @@ final class Repository
      */
     public static function generateToken()
     {
-        $api_key = \Mobbex\Platform::$settings['api_key'];
-        $access_token = \Mobbex\Platform::$settings['access_token'];
+        $apiKey      = \Mobbex\Platform::$settings['api_key'];
+        $accessToken = \Mobbex\Platform::$settings['access_token'];
 
         return password_hash(
-            "{$api_key}|{$access_token}",
+            "{$apiKey}|{$accessToken}",
             PASSWORD_DEFAULT
         );
     }
@@ -167,11 +167,11 @@ final class Repository
      */
     public static function validateToken($token)
     {
-        $api_key = \Mobbex\Platform::$settings['api_key'];
-        $access_token = \Mobbex\Platform::$settings['access_token'];
+        $apikey = \Mobbex\Platform::$settings['api_key'];
+        $accessToken = \Mobbex\Platform::$settings['access_token'];
 
         return password_verify(
-            "{$api_key}|{$access_token}",
+            "{$apikey}|{$accessToken}",
             $token
         );
     }
