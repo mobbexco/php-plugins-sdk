@@ -14,13 +14,26 @@ final class Repository
      */
     public static function getSources($total = null, $installments = [])
     {
+        //try to get sources from cache memory
+        $key  = \Mobbex\Cache::generateKey('mobbex_sources_', [$total, json_encode($installments)]);
+        $data = \Mobbex\Platform::$cache->get($key);
 
+        //return sources from cache memory
+        if($data)
+            return $data;
+
+        //get sources from mobbex API
         $query = self::getInstallmentsQuery($total, $installments);
 
-        return \Mobbex\Api::request([
+        $sources = \Mobbex\Api::request([
             'method' => 'GET',
             'uri'    => "sources" . ($query ? "?$query" : '')
         ]) ?: [];
+
+        if($sources)
+            \Mobbex\Platform::$cache->store($key, json_encode($sources));
+        
+        return $sources;
     }
 
     /**
