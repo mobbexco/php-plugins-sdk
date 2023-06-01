@@ -12,14 +12,8 @@ class Cache
      * 
      * @return string
      */
-    public static function generateKey($key, $params = [])
+    public static function generateKey($key, ...$params)
     {
-        //Add mobbex credentials to the hash
-        $hash = \Mobbex\Platform::$settings['api_key'] . \Mobbex\Platform::$settings['access_token'];
-        //Add the params to the hash
-        foreach ($params as $param)
-            $hash .= ($param ?: '');
-
-        return $key . md5($hash);
+        return $key . md5(\Mobbex\Platform::$settings['api_key'] . \Mobbex\Platform::$settings['access_token'] . implode($params));
     }
 }
