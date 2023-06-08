@@ -1,0 +1,5 @@
+CREATE TABLE `DB_PREFIX_mobbex_cache` (
+  `cache_key` VARCHAR(255) NOT NULL PRIMARY KEY,
+  `data` TEXT NOT NULL,
+  `date` TIMESTAMP DEFAULT NOW()
+);
