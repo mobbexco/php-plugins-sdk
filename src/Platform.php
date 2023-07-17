@@ -39,6 +39,9 @@ final class Platform
     /** @var \Mobbex\Model\AbstractCache */
     public static $cache;
 
+    /** @var \Mobbex\Model\Db */
+    public static $db;
+
     /** Hook execution callback */
     public static $hook;
 
@@ -80,10 +83,12 @@ final class Platform
      * Load plugin models to sdk.
      * 
      * @param \Mobbex\Model\AbstractCache $cache Mobbex cache model.
+     * @param object $db Model to manage the db connection.
      */
-    public static function loadModels($cache)
+    public static function loadModels($cache, $db = null)
     {
         self::$cache = $cache;
+        self::$db    = $db ?: new \Mobbex\Model\Db;
     }
 
     /**
