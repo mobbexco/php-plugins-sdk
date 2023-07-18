@@ -15,7 +15,7 @@ final class Repository
     public static function getSources($total = null, $installments = [])
     {
         //try to get sources from cache memory
-        $key  = \Mobbex\Cache::generateKey('mobbex_sources_', $total, json_encode($installments));
+        $key  = \Mobbex\Model\Cache::generateKey('mobbex_sources_', $total, json_encode($installments));
         $data = \Mobbex\Platform::$cache->get($key);
 
         //return sources from cache memory
