@@ -27,10 +27,7 @@ class Cache
      * @return boolean
      * 
      */
-    public function store($key, $data)
-    {
-        return isset($key) && isset($data) ? true : null;
-    }
+    public function store($key, $data){}
 
     /**
      * Get data stored in mobbex chache table.
@@ -40,16 +37,10 @@ class Cache
      * @return string|bool $data Data to store.
      * 
      */
-    public function get($key)
-    {
-        return isset($key) ? true : null;
-    }
+    public function get($key){}
 
     /**
      * Delete expired stored data in cache table.
      */
-    public function deleteExpiredCache()
-    {
-        return null;
-    }
+    public function deleteExpiredCache(){}
 }

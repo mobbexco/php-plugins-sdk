@@ -83,7 +83,7 @@ final class Platform
      */
     public static function loadModels($cache)
     {
-        $cache ? self::$cache = $cache : self::$cache = new \Mobbex\Model\Cache;
+        self::$cache = $cache ? $cache : new \Mobbex\Model\Cache();
     }
 
     /**
