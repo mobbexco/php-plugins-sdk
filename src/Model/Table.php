@@ -37,7 +37,7 @@ class Table
      */
     public function __construct($name, $definition = [])
     {
-        $this->definition = empty($definition) ? include __DIR__ . "/../utils/table-definition/$name.php" : $definition;
+        $this->definition = empty($definition) ? self::getTableDefinition($name) : $definition;
         $this->db         = \Mobbex\Platform::$db;
         $this->table      = $this->db->prefix.'mobbex_'.$name;
 
@@ -186,7 +186,7 @@ class Table
         //Check deprecated columns
         foreach ($columns as $column)
             if(!in_array($column, $this->definition))
-                $this->warning[] = "The column " . $column['Field'] . " of the table $this->table didn't exists in the definition";
+                $this->warning[] = "The column " . $column['Field'] . " of the table $this->table is deprecated";
 
         //Check column definition
         foreach ($this->definition as $column)
@@ -195,6 +195,18 @@ class Table
 
         //If definition looks good return true
         return true;
-    } 
+    }
+
+    /**
+     * Returns the definition for a given Mobbex table name.
+     * 
+     * @param string $tableName Mobbex table name
+     * 
+     * @return array
+     */
+    public static function getTableDefinition($name)
+    {
+        return include __DIR__ . "/../utils/table-definition/$name.php";
+    }
 
 }
