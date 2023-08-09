@@ -94,6 +94,7 @@ final class Platform
     public static function toArray()
     {
         return [
+            'php'       => PHP_VERSION,
             'name'      => self::$name,
             'version'   => self::$version,
             'ecommerce' => self::$extensions,
