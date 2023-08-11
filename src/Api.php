@@ -61,14 +61,15 @@ class Api
             CURLOPT_POSTFIELDS     => !empty($data['body']) ? json_encode($data['body']) : null,
         ]);
 
-        $response = curl_exec($curl);
-        $error    = curl_error($curl);
+        $response    = curl_exec($curl);
+        $error       = curl_error($curl);
+        $errorNumber = curl_errno($curl);
 
         curl_close($curl);
 
         // Throw curl errors
         if ($error)
-            throw new \Mobbex\Exception('Curl error in Mobbex request #:' . $error, curl_errno($curl), $data);
+            throw new \Mobbex\Exception('Curl error in Mobbex request #:' . $error, $errorNumber, $data);
 
         $result = json_decode($response, true);
 
