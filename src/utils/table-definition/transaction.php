@@ -1,7 +1,10 @@
 <?php
 
 /**
- * Mobbex Transaction table definition. 
+ * Mobbex Transaction table definition.
+ * 
+ * The format used in the definition of the mobbex tables corresponds to the format of "show columns" statement returned data.
+ * @see https://dev.mysql.com/doc/refman/8.0/en/show-columns.html
  */
 return [
     ['Field' => 'id',                 'Type' => 'int(11)',       'Null' => 'NO', 'Key' => 'PRI', 'Default' => null, 'Extra' => 'auto_increment'],
