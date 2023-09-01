@@ -10,9 +10,6 @@ namespace Mobbex\Model;
  */
 class Table
 {
-    /** List of warnings in the model */
-    public $warning = [];
-
     /** Platform DB connection */
     public $db;
 
@@ -165,15 +162,15 @@ class Table
         //Get all the columns
         $columns = $this->db->query("SHOW COLUMNS FROM $this->table;");
 
-        //Check deprecated columns
-        foreach ($columns as $column)
-            if(!in_array($column, $this->definition))
-                $this->warning[] = "The column " . $column['Field'] . " of the table $this->table is deprecated";
-
         //Check column definition
         foreach ($this->definition as $column)
             if(!in_array($column, $columns))
                 return false;
+
+        //Drop deprecated columns
+        foreach ($columns as $column)
+            if (!in_array($column, $this->definition, true))
+                $this->db->query("ALTER TABLE $this->table DROP COLUMN " . $column['Field'] . ";");
 
         //If definition looks good return true
         return true;
