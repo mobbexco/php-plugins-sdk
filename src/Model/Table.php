@@ -23,6 +23,8 @@ class Table
     public $definition;
 
     /**
+     * Constructor
+     * 
      * @param string $name Table name.
      * @param array $definition {
      *     @type array {
@@ -37,19 +39,11 @@ class Table
      */
     public function __construct($name, $definition = [])
     {
-        $this->definition = empty($definition) ? self::getTableDefinition($name) : $definition;
+        $this->definition = $definition ?: self::getTableDefinition($name);
         $this->db         = \Mobbex\Platform::$db;
         $this->table      = $this->db->prefix.'mobbex_'.$name;
 
         //Create the table
-        $this->init();
-    }
-
-    /**
-     * Init the Table model.
-     */
-    private function init()
-    {
         $this->result = $this->tableExists() ? $this->alterTable() : $this->createTable();
     }
 
@@ -62,6 +56,7 @@ class Table
     {
         //Init query
         $query = "CREATE TABLE $this->table (";
+       
         //Add columns
         foreach ($this->definition as $column => $format) {
             $query .=
@@ -70,7 +65,7 @@ class Table
                 . ($format['Null'] == 'NO' ? 'NOT NULL' : '') . ' '
                 . strtoupper($format['Extra']) . ' '
                 . ($format['Key'] == 'PRI' ? 'PRIMARY KEY' : '') . ' '
-                . (!empty($format['Default']) ? 'DEFAULT ' . $format['Default'] : '')
+                . ($format['Default'] ? 'DEFAULT ' . $format['Default'] : '')
                 . ($format !== end($this->definition) ? ', ' : ');');
         }
 
@@ -89,20 +84,20 @@ class Table
             return true;
 
         //Reset the primary key
-        $this->resetPrimaryKey();
+        $this->maybeResetPrimaryKey();
         //Init the query
         $query = "ALTER TABLE $this->table ";
 
         //Modify columns
-        foreach ($this->definition as $format) {
-            $query .= ($this->columnExists($format['Field']) ? "CHANGE `".$format['Field']."` " : "ADD ") .
-                "`".$format['Field']."` "
-                . strtoupper($format['Type']) . ' '
-                . ($format['Null'] == 'NO' ? 'NOT NULL' : '') . ' '
-                . strtoupper($format['Extra']) . ' '
-                . ($format['Key'] == 'PRI' ? 'PRIMARY KEY' : '') . ' '
-                . (!empty($format['Default']) ? 'DEFAULT ' . $format['Default'] : '')
-                . ($format !== end($this->definition) ? ', ' : ';');
+        foreach ($this->definition as $column) {
+            $query .= ($this->columnExists($column['Field']) ? "CHANGE `".$column['Field']."` " : "ADD ") .
+                "`".$column['Field']."` "
+                . strtoupper($column['Type']) . ' '
+                . ($column['Null'] == 'NO' ? 'NOT NULL' : '') . ' '
+                . strtoupper($column['Extra']) . ' '
+                . ($column['Key'] == 'PRI' ? 'PRIMARY KEY' : '') . ' '
+                . ($column['Default'] ? 'DEFAULT ' . $column['Default'] : '')
+                . ($column !== end($this->definition) ? ', ' : ';');
         }
 
         //Execute query
@@ -114,31 +109,24 @@ class Table
     /**
      * Resets the primary key of the table.
      */
-    public function resetPrimaryKey()
+    public function maybeResetPrimaryKey()
     {
-        //Query to get the primary key of the table
-        $getPrimaryKey = "SELECT COLUMN_NAME
-            FROM information_schema.key_column_usage
-            WHERE TABLE_NAME = '".$this->table."' AND CONSTRAINT_NAME = (
-                SELECT constraint_name
-                FROM information_schema.table_constraints
-                WHERE table_name = '$this->table'
-                AND constraint_type = 'PRIMARY KEY'
-            );";
-
-        //Get the primary key name
-        $result = $this->db->query($getPrimaryKey);
+        //Get the primary key
+        $primaryKey = $this->db->query("SHOW keys FROM $this->table WHERE key_name = 'PRIMARY'");
 
         //If primary key exists
-        if(!empty($result)) {
+        if(!empty($primaryKey)) {
             //Get column name
-            $name = $result[0]['COLUMN_NAME'];
-            //Drop the primary key
-            foreach ($this->definition as $column) {
-                if($column['Field'] !== $name)
-                    continue;
+            $name = $primaryKey[0]['Column_name'];
+            
+            //get the column
+            $column = $this->db->query("SHOW COLUMNS FROM $this->table LIKE '$name';")[0];
+
+            //Drop the primary key if the definition is diferent
+            if(!in_array($column, $this->definition)){
                 //Delete the auto_increment
-                $this->db->query("ALTER TABLE $this->table MODIFY COLUMN `$name` ".($column['Extra'] == 'auto_increment' ? 'INT(11)' : strtoupper($column['Type'])).";");
+                $this->db->query("ALTER TABLE $this->table MODIFY COLUMN `$name` ". strtoupper($column['Type']) . ";");
+
                 //Drop the primary key
                 $this->db->query("ALTER TABLE $this->table DROP PRIMARY KEY;");
             }
@@ -162,15 +150,9 @@ class Table
      * 
      * @return bool
      */
-    public function columnExists($name){
-        //Get all the columns
-        $columns = $this->db->query("SHOW COLUMNS FROM $this->table;");
-        //Return true if the column exits
-        foreach ($columns as $column)
-            if($column['Field'] === $name)
-                return true;
-        //Return false if not
-        return false;
+    public function columnExists($name)
+    {
+        return (bool) $this->db->query("SHOW COLUMNS FROM $this->table WHERE field = '$name';");
     } 
 
     /**

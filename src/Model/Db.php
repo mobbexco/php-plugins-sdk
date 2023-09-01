@@ -4,7 +4,15 @@ namespace Mobbex\Model;
 
 class Db
 {
-    public $prefix;
+    /**
+     * Constructor
+     * 
+     * @param string $prefix
+     */
+    public function __construct($prefix)
+    {
+        $this->prefix = $prefix;
+    }
 
     /**
      * Executes a query & return the results of the query or bool.
@@ -13,7 +21,7 @@ class Db
      * 
      * @return bool|array
      */
-    function query($query)
+    public function query($query)
     {
         return false;
     }
