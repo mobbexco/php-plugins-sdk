@@ -9,7 +9,7 @@ class Db
      * 
      * @param string $prefix
      */
-    public function __construct($prefix)
+    public function __construct($prefix = '')
     {
         $this->prefix = $prefix;
     }
