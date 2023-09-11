@@ -150,7 +150,7 @@ final class Repository
      */
     public static function convertCountryCode($code)
     {
-        $countries = include ('iso-3166/country-codes.php') ?: [];
+        $countries = include __DIR__. '/utils/iso-3166/country-codes.php';
 
         return isset($countries[$code]) ? $countries[$code] : null;
     }
