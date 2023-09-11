@@ -113,14 +113,18 @@ class Checkout
                 'addresses'    => $addresses,
                 'webhooksType' => $webhooksType,
                 'options'      => [
-                    'embed'    => (bool) $this->settings['embed'],
-                    'domain'   => \Mobbex\Platform::$domain,
-                    'platform' => \Mobbex\Platform::toArray(),
-                    'redirect' => [
+                    'embed'                           => (bool) $this->settings['embed'],
+                    'domain'                          => \Mobbex\Platform::$domain,
+                    'platform'                        => \Mobbex\Platform::toArray(),
+                    'emitNotifications'               => (bool) $this->settings['emit_notifications'],
+                    'emitCustomerSuccessNotification' => (bool) $this->settings['emit_customer_success_notification'],
+                    'emitCustomerFailureNotification' => (bool) $this->settings['emit_customer_failure_notification'],
+                    'emitCustomerWaitingNotification' => (bool) $this->settings['emit_customer_waiting_notification'],
+                    'redirect'                        => [
                         'success' => true,
                         'failure' => false,
                     ],
-                    'theme'    => [
+                    'theme'                           => [
                         'type'       => $this->settings['theme'],
                         'background' => $this->settings['background'],
                         'colors'     => [
