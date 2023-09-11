@@ -5,6 +5,10 @@ namespace Mobbex\Model;
 class Db
 {
     /**
+    * Platform Db prefix
+    */
+    public $prefix;
+    /**
      * Constructor
      * 
      * @param string $prefix
