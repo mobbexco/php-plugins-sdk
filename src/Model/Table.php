@@ -82,20 +82,29 @@ class Table
 
         //Reset the primary key
         $this->maybeResetPrimaryKey();
+
         //Init the query
         $query = "ALTER TABLE $this->table ";
 
         //Modify columns
         foreach ($this->definition as $column) {
-            $query .= ($this->columnExists($column['Field']) ? "CHANGE `".$column['Field']."` " : "ADD ") .
-                "`".$column['Field']."` "
-                . strtoupper($column['Type']) . ' '
-                . ($column['Null'] == 'NO' ? 'NOT NULL' : '') . ' '
-                . strtoupper($column['Extra']) . ' '
-                . ($column['Key'] == 'PRI' ? 'PRIMARY KEY' : '') . ' '
-                . ($column['Default'] ? 'DEFAULT ' . $column['Default'] : '')
-                . ($column !== end($this->definition) ? ', ' : ';');
+            //Get the actual column in table
+            $columnInTable = $this->getColumn($column['Field']);
+
+            //Add change/add query if column definition didnt match with actual column
+            if (!$columnInTable || $columnInTable !== $column){
+                $query .= (!!$columnInTable ? "CHANGE `".$column['Field']."` " : "ADD ") .
+                    "`".$column['Field']."` "
+                    . strtoupper($column['Type']) . ' '
+                    . ($column['Null'] == 'NO' ? 'NOT NULL' : '') . ' '
+                    . strtoupper($column['Extra']) . ' '
+                    . ($column['Key'] == 'PRI' ? 'PRIMARY KEY' : '') . ' '
+                    . ($column['Default'] ? 'DEFAULT ' . $column['Default'] : '')
+                    . ($column !== end($this->definition) ? ', ' : ';'
+                );
+            }
         }
+
 
         //Execute query
         $this->db->query($query);
@@ -141,15 +150,16 @@ class Table
     }
 
     /**
-     * Check if a column exists in the table.
+     * Returns a column if exists in the table or false if not.
      * 
      * @param string $name
      * 
-     * @return bool
+     * @return array|bool
      */
-    public function columnExists($name)
+    public function getColumn($name)
     {
-        return (bool) $this->db->query("SHOW COLUMNS FROM $this->table WHERE field = '$name';");
+        $result = $this->db->query("SHOW COLUMNS FROM $this->table WHERE field = '$name';");
+        return isset($result[0]) ? $result[0] : false;
     } 
 
     /**
