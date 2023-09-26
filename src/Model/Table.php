@@ -19,6 +19,9 @@ class Table
     /** Array with the table definition */
     public $definition;
 
+    /** The result of query execution */
+    public $result;
+
     /**
      * Constructor
      * 
