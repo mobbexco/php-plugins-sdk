@@ -54,23 +54,14 @@ class Table
      */
     private function createTable()
     {
-        //Init query
-        $query = "CREATE TABLE $this->table (";
-       
-        //Add columns
-        foreach ($this->definition as $column => $format) {
-            $query .=
-                "`".$format['Field']."` "
-                . strtoupper($format['Type']) . ' '
-                . ($format['Null'] == 'NO' ? 'NOT NULL' : '') . ' '
-                . strtoupper($format['Extra']) . ' '
-                . ($format['Key'] == 'PRI' ? 'PRIMARY KEY' : '') . ' '
-                . ($format['Default'] ? 'DEFAULT ' . $format['Default'] : '')
-                . ($format !== end($this->definition) ? ', ' : ');');
-        }
+        $statements = [];
 
-        //Execute query
-        return (bool) $this->db->query($query);
+        foreach ($this->definition as $column)
+            $statements[] = $this->buildStatement($column);
+
+        return (bool) $this->db->query(
+            sprintf("CREATE TABLE `$this->table` (%s);", implode(', ', $statements))
+        );
     }
 
     /**
@@ -80,37 +71,27 @@ class Table
      */
     private function alterTable()
     {
-        if($this->checkTableDefinition())
+        $statements = [];
+
+        if ($this->checkTableDefinition())
             return true;
 
-        //Reset the primary key
+        // Reset the primary key
         $this->maybeResetPrimaryKey();
 
-        //Init the query
-        $query = "ALTER TABLE $this->table ";
-
-        //Modify columns
+        // Build query
         foreach ($this->definition as $column) {
-            //Get the actual column in table
-            $columnInTable = $this->getColumn($column['Field']);
+            // Try to get column from db to check if its change
+            $currentColumn = $this->getColumn($column['Field']);
 
-            //Add change/add query if column definition didnt match with actual column
-            if (!$columnInTable || $columnInTable !== $column){
-                $query .= (!!$columnInTable ? "CHANGE `".$column['Field']."` " : "ADD ") .
-                    "`".$column['Field']."` "
-                    . strtoupper($column['Type']) . ' '
-                    . ($column['Null'] == 'NO' ? 'NOT NULL' : '') . ' '
-                    . strtoupper($column['Extra']) . ' '
-                    . ($column['Key'] == 'PRI' ? 'PRIMARY KEY' : '') . ' '
-                    . ($column['Default'] ? 'DEFAULT ' . $column['Default'] : '')
-                    . ($column !== end($this->definition) ? ', ' : ';'
-                );
-            }
+            // Only add if it has changes on definition
+            if ($currentColumn != $column)
+                $statements[] = $this->buildStatement($column, $currentColumn ? 'CHANGE' : 'ADD');
         }
 
-
-        //Execute query
-        $this->db->query($query);
+        $this->db->query(
+            sprintf("ALTER TABLE `$this->table` %s;", implode(', ', $statements))
+        );
 
         return $this->checkTableDefinition();
     }
@@ -149,7 +130,7 @@ class Table
      */
     public function tableExists()
     {
-        return !empty($this->db->query("SHOW TABLES LIKE '$this->table';"));
+        return (bool) $this->db->query("SHOW TABLES LIKE '$this->table';");
     }
 
     /**
@@ -190,7 +171,7 @@ class Table
     }
 
     /**
-     * Returns the definition for a given Mobbex table name.
+     * Retrieve the definition for the table given.
      * 
      * @param string $tableName Mobbex table name
      * 
@@ -201,4 +182,24 @@ class Table
         return include __DIR__ . "/../utils/table-definition/$name.php";
     }
 
+    /**
+     * Build a statement query from a column definition.
+     * 
+     * @param array $column Column definition array.
+     * @param null|string $operation Query operation. Leave empty for creation.
+     * 
+     * @return string 
+     */
+    public function buildStatement($column, $operation = null)
+    {
+        return implode(' ', array_filter([
+            $operation == 'CHANGE'  ? "CHANGE `$column[Field]`"  : $operation,
+            "`$column[Field]`",
+            strtoupper($column['Type']),
+            strtoupper($column['Extra']),
+            $column['Null'] == 'NO' ? 'NOT NULL'                 : null,
+            $column['Key'] == 'PRI' ? 'PRIMARY KEY'              : null,
+            $column['Default']      ? "DEFAULT $column[Default]" : null
+        ]));
+    }
 }
