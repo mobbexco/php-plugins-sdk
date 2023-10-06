@@ -73,7 +73,7 @@ final class Platform
      * @param callable $hook Hook execution callback. @see Description at \Mobbex\Platform::hook()
      * @param callable $log Log execution callback. @see Description at \Mobbex\Platform::log()
      */
-    public static function init($name, $version, $embed,$domain, $extensions = [], $settings = [], $hook = null, $log = null)
+    public static function init($name, $version, $embed, $domain, $extensions = [], $settings = [], $hook = null, $log = null)
     {
         self::$name       = $name;
         self::$version    = $version;
