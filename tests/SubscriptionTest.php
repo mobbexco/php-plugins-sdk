@@ -6,7 +6,7 @@ class SubscriptionTest extends \PHPUnit\Framework\TestCase
 {
     protected function setUp() : void
     {
-        \Mobbex\Platform::init('tests', '1.0.0', $_ENV['SERVER_URL'], [], [
+        \Mobbex\Platform::init('tests', '1.0.0', '1.1.0', $_ENV['SERVER_URL'], [], [
             'api_key'      => $_ENV['API_KEY'],
             'access_token' => $_ENV['ACESS_TOKEN'],
             'test'         => true,
