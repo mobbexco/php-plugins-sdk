@@ -10,6 +10,9 @@ final class Platform
     /** Version of Mobbex plugin */
     public static $version;
 
+    /** Version of Mobbex plugin */
+    public static $embed;
+
     /** Domain name of current site */
     public static $domain;
 
