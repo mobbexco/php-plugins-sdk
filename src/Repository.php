@@ -14,15 +14,15 @@ final class Repository
      */
     public static function getSources($total = null, $installments = [])
     {
-        //try to get sources from cache memory
+        // Try to get sources from cache memory
         $key  = \Mobbex\Model\Cache::generateKey('mobbex_sources_', $total, json_encode($installments));
         $data = \Mobbex\Platform::$cache->get($key);
 
-        //return sources from cache memory
+        // Return sources from cache memory
         if($data)
             return $data;
 
-        //get sources from mobbex API
+        // Get sources from mobbex API
         $query = self::getInstallmentsQuery($total, $installments);
 
         $sources = \Mobbex\Api::request([
@@ -30,8 +30,9 @@ final class Repository
             'uri'    => "sources" . ($query ? "?$query" : '')
         ]) ?: [];
 
+        // Save sources in mobbex cache table with literal coding if there is any
         if($sources)
-            \Mobbex\Platform::$cache->store($key, json_encode($sources));
+            \Mobbex\Platform::$cache->store($key, json_encode($sources, JSON_UNESCAPED_UNICODE));
         
         return $sources;
     }
