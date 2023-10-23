@@ -110,11 +110,11 @@ final class Platform
         return [
             'php'       => PHP_VERSION,
             'name'      => self::$name,
+            'version'   => self::$version,
+            'ecommerce' => self::$extensions,
             'embed'     => [
                 "version" => self::$embed
             ],
-            'version'   => self::$version,
-            'ecommerce' => self::$extensions,
         ];
     }
 
