@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<ruleset name="PHPLinter">
+    <description>Specific ruleset which checks for PHP cross version compatibility and syntax errors.</description>
+    <rule ref="Generic.PHP.Syntax"/>
+    <rule ref="PHPCompatibility"/>
+</ruleset>
