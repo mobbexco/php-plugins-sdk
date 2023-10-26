@@ -10,9 +10,6 @@ final class Platform
     /** Version of Mobbex plugin */
     public static $version;
 
-    /** Version of Mobbex plugin */
-    public static $embed;
-
     /** Domain name of current site */
     public static $domain;
 
@@ -41,6 +38,7 @@ final class Platform
         'emit_customer_success_notification' => true,
         'emit_customer_failure_notification' => true,
         'emit_customer_waiting_notification' => true,
+        'embedVersion'                       => true,
     ];
 
     /** @var \Mobbex\Model\Cache */
@@ -69,18 +67,16 @@ final class Platform
      * 
      * @param string $name Name of current platform.
      * @param string $version Version of Mobbex plugin.
-     * @param string $embed Version of Mobbex embed sdk script.
      * @param string $domain Domain name or URL of current site.
      * @param array $extensions Current extensions and their versions.
      * @param array $settings Plugin settings values.
      * @param callable $hook Hook execution callback. @see Description at \Mobbex\Platform::hook()
      * @param callable $log Log execution callback. @see Description at \Mobbex\Platform::log()
      */
-    public static function init($name, $version, $domain, $embed='1.1.0', $extensions = [], $settings = [], $hook = null, $log = null)
+    public static function init($name, $version, $domain, $extensions = [], $settings = [], $hook = null, $log = null)
     {
         self::$name       = $name;
         self::$version    = $version;
-        self::$embed      = $embed;
         self::$domain     = str_replace('www.', '', parse_url($domain, PHP_URL_HOST) ?: $domain);
         self::$extensions = $extensions;
         self::$settings   = array_merge(self::$settings, $settings);
@@ -112,9 +108,6 @@ final class Platform
             'name'      => self::$name,
             'version'   => self::$version,
             'ecommerce' => self::$extensions,
-            'embed'     => [
-                "version" => self::$embed
-            ],
         ];
     }
 
