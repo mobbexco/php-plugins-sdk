@@ -18,7 +18,7 @@ jobs:
         php-version: ${{ matrix.php }}
         tools: composer
     - name: Install dependencies
-      run: composer install --no-dev
+      run: composer install --no-dev --ignore-platform-req php
     - name: Intall PHPCS and code standard
       run: composer global require "phpcompatibility/php-compatibility" "squizlabs/php_codesniffer=*"
     - name: Configure standard
