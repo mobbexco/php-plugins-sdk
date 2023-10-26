@@ -26,7 +26,7 @@ jobs:
     - name: Log that standards are installed
       run: ~/.composer/vendor/bin/phpcs -i
     - name: Execute PHPCS
-      run: ~/.composer/vendor/bin/phpcs -p . --standard=PHPCompatibility
+      run: ~/.composer/vendor/bin/phpcs -p . --standard=./.github/workflows/ruleset.xml
 
   run-tests:
     needs: check-syntax
