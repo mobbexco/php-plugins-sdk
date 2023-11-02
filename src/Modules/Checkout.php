@@ -114,6 +114,7 @@ class Checkout
                 'webhooksType' => $webhooksType,
                 'options'      => [
                     'embed'                           => (bool) $this->settings['embed'],
+                    'embedVersion'                    => $this->settings['embed_version'],
                     'domain'                          => \Mobbex\Platform::$domain,
                     'platform'                        => \Mobbex\Platform::toArray(),
                     'emitNotifications'               => (bool) $this->settings['emit_notifications'],
