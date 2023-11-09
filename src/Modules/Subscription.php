@@ -51,7 +51,6 @@ class Subscription
         $name,
         $description,
         $interval,
-        $test,
         $features = [],
         $limit = 0,
         $freeTrial = 0,
@@ -66,7 +65,6 @@ class Subscription
             'uri'    => 'subscriptions/' . $uid,
             'body'   => \Mobbex\Platform::hook($hookName, true, [
                 'currency'    => 'ARS',
-                'test'        => $test,
                 'name'        => $name,
                 'type'        => $type,
                 'total'       => $total,
@@ -78,6 +76,7 @@ class Subscription
                 'return_url'  => $returnUrl,
                 'webhook'     => $webhookUrl,
                 'description' => $description,
+                'test'        => $this->settings['test'],
                 'reference'   => $this->reference = \Mobbex\Platform::$name . '_id:' . $id,
                 'options'     => [
                     'embed'    => $this->settings['embed'],
