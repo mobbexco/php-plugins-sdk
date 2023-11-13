@@ -66,9 +66,9 @@ class Subscriber
             'method' => 'POST',
             'uri'    => 'subscriptions/' . $subscriptionUid . '/subscriber/' . $uid,
             'body'   => \Mobbex\Platform::hook($hookName, true, [
-                'total'     => $total,
-                'addresses' => $addresses,
+                'total'     => (float) $total,
                 'test'      => (bool) $this->settings['test'],
+                'addresses' => !empty($addresses) ? $addresses : [],
                 'reference' => $this->reference = (string) $reference,
                 'startDate' => [
                     'day'   => date('d', strtotime($startDate)),
