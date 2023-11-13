@@ -216,14 +216,10 @@ class Table
         //Get columns data
         $columnData = $this->db->query("SHOW FULL COLUMNS FROM $this->table;");
 
+        //Return false if collation isnt utf8mb4
         foreach ($columnData as $data) {
-            //Check only in text type columns
-            if($data['Type'] !== 'text')
-                continue;
-
-            //Return false if collation isnt utf8mb4
-            if($data['Collation'] !== 'utf8mb4_general_ci')
-                return false;
+            if(!empty($data['Collation']) && $data['Collation'] !== 'utf8mb4_general_ci')
+                false;
         }
 
         //If looks good return true
