@@ -60,7 +60,7 @@ class Table
             $statements[] = $this->buildStatement($column);
 
         return (bool) $this->db->query(
-            sprintf("CREATE TABLE `$this->table` (%s);", implode(', ', $statements))
+            sprintf("CREATE TABLE `$this->table` (%s) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;", implode(', ', $statements))
         );
     }
 
@@ -92,7 +92,10 @@ class Table
         $this->db->query(
             sprintf("ALTER TABLE `$this->table` %s;", implode(', ', $statements))
         );
-
+        
+        if(!$this->checkCharset())
+            $this->db->query("ALTER TABLE `$this->table` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;");
+            
         return $this->checkTableDefinition();
     }
 
@@ -166,8 +169,8 @@ class Table
             if (!in_array($column, $this->definition, true))
                 $this->db->query("ALTER TABLE $this->table DROP COLUMN " . $column['Field'] . ";");
 
-        //If definition looks good return true
-        return true;
+        //Check that the table has the correct charset
+        return $this->checkCharset();
     }
 
     /**
@@ -201,5 +204,25 @@ class Table
             $column['Key'] == 'PRI' ? 'PRIMARY KEY'              : null,
             $column['Default']      ? "DEFAULT $column[Default]" : null
         ]));
+    }
+
+    /**
+     * Check if the charset is utf8mb4.
+     * 
+     * @return bool
+     */
+    public function checkCharset()
+    {
+        //Get columns data
+        $columnData = $this->db->query("SHOW FULL COLUMNS FROM $this->table;");
+
+        //Return false if collation isnt utf8mb4
+        foreach ($columnData as $data) {
+            if(!empty($data['Collation']) && $data['Collation'] !== 'utf8mb4_general_ci')
+                false;
+        }
+
+        //If looks good return true
+        return true;
     }
 }
