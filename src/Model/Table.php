@@ -41,9 +41,12 @@ class Table
     {
         $this->definition = $definition ?: self::getTableDefinition($name);
         $this->db         = \Mobbex\Platform::$db;
-        $this->table      = $this->db->prefix.'mobbex_'.$name;
+        $this->table      = "{$this->db->prefix}mobbex_$name";
 
-        //Create the table
+        // Sort definition by keys (do not use array_walk)
+        foreach ($this->definition as &$defColumn) ksort($defColumn);
+
+        // Create or alter the table
         $this->result = $this->tableExists() ? $this->alterTable() : $this->createTable();
     }
 
@@ -100,30 +103,27 @@ class Table
     }
 
     /**
-     * Resets the primary key of the table.
+     * Try to reset the primary key of the table.
      */
     public function maybeResetPrimaryKey()
     {
-        //Get the primary key
         $primaryKey = $this->db->query("SHOW keys FROM $this->table WHERE key_name = 'PRIMARY'");
 
-        //If primary key exists
-        if(!empty($primaryKey)) {
-            //Get column name
-            $name = $primaryKey[0]['Column_name'];
-            
-            //get the column
-            $column = $this->db->query("SHOW COLUMNS FROM $this->table LIKE '$name';")[0];
+        // Exit if the table has not PK
+        if (empty($primaryKey))
+            return;
 
-            //Drop the primary key if the definition is diferent
-            if(!in_array($column, $this->definition)){
-                //Delete the auto_increment
-                $this->db->query("ALTER TABLE $this->table MODIFY COLUMN `$name` ". strtoupper($column['Type']) . ";");
+        // Get current db column data
+        $columnName = $primaryKey[0]['Column_name'];
+        $column     = $this->getColumn($columnName);
 
-                //Drop the primary key
-                $this->db->query("ALTER TABLE $this->table DROP PRIMARY KEY;");
-            }
-        }
+        // Exit if exists
+        if (in_array($column, $this->definition))
+            return;
+
+        // Delete the auto_increment and drops PK
+        $this->db->query("ALTER TABLE $this->table MODIFY COLUMN `$columnName` ". strtoupper($column['Type']) . ";");
+        $this->db->query("ALTER TABLE $this->table DROP PRIMARY KEY;");
     }
 
     /**
@@ -146,7 +146,25 @@ class Table
     public function getColumn($name)
     {
         $result = $this->db->query("SHOW COLUMNS FROM $this->table WHERE field = '$name';");
-        return isset($result[0]) ? $result[0] : false;
+        $column = isset($result[0]) && is_array($result[0]) ? $result[0] : [];
+
+        // Sort column by key and return
+        return ksort($column) ? $column : false;
+    }
+
+    /**
+     * Get all the columns from db.
+     * 
+     * @return array
+     */
+    public function getColumns()
+    {
+        $columns = $this->db->query("SHOW COLUMNS FROM $this->table;") ?: [];
+
+        // Sort current db coluns by keys (do not use array_walk)
+        foreach ($columns as &$column) ksort($column);
+
+        return $columns ?: [];
     } 
 
     /**
@@ -156,8 +174,7 @@ class Table
      */
     public function checkTableDefinition()
     {
-        //Get all the columns
-        $columns = $this->db->query("SHOW COLUMNS FROM $this->table;");
+        $columns = $this->getColumns();
 
         //Check column definition
         foreach ($this->definition as $column)
