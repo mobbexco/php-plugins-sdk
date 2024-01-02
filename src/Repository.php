@@ -75,21 +75,25 @@ final class Repository
      */
     public static function getPlansFilterFields($id, $checkedCommonPlans = [], $checkedAdvancedPlans = [])
     {
-        $commonFields = $advancedFields = $sourceNames = [];
+        $commonFields = $advancedFields = $sourceNames = $sourceGroups = [];
         
         // Create common plan fields
         foreach (self::getSources() as $source) {
             // Only if have installments
             if (empty($source['installments']['list']))
-            continue;
+                continue;
 
             // Create field array data
             foreach ($source['installments']['list'] as $plan) {
                 $commonFields[$plan['reference']] = [
-                    'id'    => 'common_plan_' . $plan['reference'],
-                    'value' => !in_array($plan['reference'], $checkedCommonPlans),
-                    'label' => $plan['name'] ?: $plan['description'],
+                    'id'          => 'common_plan_' . $plan['reference'],
+                    'value'       => !in_array($plan['reference'], $checkedCommonPlans),
+                    'label'       => $plan['name'],
+                    'description' => $plan['description'],
                 ];
+
+                $sourceGroups[$plan['name']][] = $source['source']['reference'];
+                $sourceGroups[$plan['name']]   = array_unique($sourceGroups[$plan['name']]);
             }
         }
 
@@ -105,14 +109,15 @@ final class Repository
             // Create field array data
             foreach ($source['installments'] as $plan) {
                 $advancedFields[$source['source']['reference']][] = [
-                    'id'      => 'advanced_plan_' . $plan['uid'],
-                    'value'   => in_array($plan['uid'], $checkedAdvancedPlans),
-                    'label'   => $plan['name'] ?: $plan['description'],
+                    'id'          => 'advanced_plan_' . $plan['uid'],
+                    'value'       => in_array($plan['uid'], $checkedAdvancedPlans),
+                    'label'       => $plan['name'],
+                    'description' => $plan['description'],
                 ];
             }
         }
 
-        return compact('commonFields', 'advancedFields', 'sourceNames');
+        return compact('commonFields', 'advancedFields', 'sourceNames', 'sourceGroups');
     }
 
     /**
