@@ -34,6 +34,8 @@ class Subscription
      * @param string $name
      * @param string $description
      * @param string $interval Interval between executions.
+     * @param bool $test Allows set test mode subscription
+     * @param array $features Subscription characteristics
      * @param int $limit Maximum number of executions.
      * @param int $freeTrial Number of free periods.
      * @param int|float $signupFee Different initial amount.
@@ -49,6 +51,7 @@ class Subscription
         $name,
         $description,
         $interval,
+        $features = [],
         $limit = 0,
         $freeTrial = 0,
         $signupFee = null,
@@ -58,21 +61,23 @@ class Subscription
 
         // Make request and set response data as properties
         $this->setResponse(\Mobbex\Api::request([
-            'uri'    => 'subscriptions/' . $uid,
             'method' => 'POST',
+            'uri'    => 'subscriptions/' . $uid,
             'body'   => \Mobbex\Platform::hook($hookName, true, [
-                'total'       => $total,
-                'type'        => $type,
-                'webhook'     => $webhookUrl,
-                'return_url'  => $returnUrl,
                 'currency'    => 'ARS',
-                'reference'   => $this->reference = \Mobbex\Platform::$name . '_id:' . $id,
                 'name'        => $name,
-                'description' => $description,
-                'limit'       => $limit,
-                'setupFee'    => $signupFee,
+                'type'        => $type,
                 'interval'    => $interval,
+                'features'    => $features,
                 'trial'       => $freeTrial,
+                'return_url'  => $returnUrl,
+                'webhook'     => $webhookUrl,
+                'description' => $description,
+                'limit'       => (int) $limit,
+                'total'       => (float) $total,
+                'setupFee'    => (float) $signupFee,
+                'test'        => $this->settings['test'],
+                'reference'   => $this->reference = \Mobbex\Platform::$name . '_id:' . $id,
                 'options'     => [
                     'embed'    => $this->settings['embed'],
                     'domain'   => \Mobbex\Platform::$domain,
