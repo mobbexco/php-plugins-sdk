@@ -26,8 +26,7 @@ class SubscriptionTest extends \PHPUnit\Framework\TestCase
             100,
             'Subscription Test',
             'Subscription PHP Plugins SDK Test',
-            '1m',
-            true
+            '1m'
         );
 
         $this->assertNotEmpty($subscription->uid);
