@@ -65,6 +65,7 @@ class Checkout
      * ]
      * @param string $webhooksType Type of webhooks to send. Can be "all" | "none" | "final" | "intermediateAndFinal"
      * @param string $hookName Name of hook to execute when body is filtered.
+     * @param string $description Allow to modify the default operation description in the console.
      */
     public function __construct(
         $id,
@@ -76,7 +77,8 @@ class Checkout
         $customer = [],
         $addresses = [],
         $webhooksType = 'all',
-        $hookName = 'mobbexCheckoutRequest'
+        $hookName = 'mobbexCheckoutRequest',
+        $description = null
     ) {
         $this->settings = \Mobbex\Platform::$settings;
 
@@ -99,7 +101,7 @@ class Checkout
                 'webhook'      => $webhookUrl,
                 'return_url'   => $returnUrl,
                 'reference'    => $this->reference = $this->generateReference($id),
-                'description'  => 'Pedido #' . $id,
+                'description'  => $description ?: "Pedido #$id",
                 'intent'       => $this->settings['payment_mode'],
                 'test'         => (bool) $this->settings['test'],
                 'multicard'    => (bool) $this->settings['multicard'],
