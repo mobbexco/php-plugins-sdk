@@ -39,6 +39,7 @@ final class Platform
         'emit_customer_failure_notification' => true,
         'emit_customer_waiting_notification' => true,
         'embed_version'                      => '1.0.23',
+        'return_timeout'                     => '5',
     ];
 
     /** @var \Mobbex\Model\Cache */

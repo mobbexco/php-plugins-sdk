@@ -123,6 +123,7 @@ class Checkout
                     'emitCustomerSuccessNotification' => (bool) $this->settings['emit_customer_success_notification'],
                     'emitCustomerFailureNotification' => (bool) $this->settings['emit_customer_failure_notification'],
                     'emitCustomerWaitingNotification' => (bool) $this->settings['emit_customer_waiting_notification'],
+                    'closeOrReturnTimeout'            => $this->settings['return_timeout'],
                     'redirect'                        => [
                         'success' => true,
                         'failure' => false,
