@@ -83,9 +83,13 @@ class Checkout
         $this->settings = \Mobbex\Platform::$settings;
 
         foreach ($items as &$item) {
-            // Set subscription type if corresponds
-            if (isset($item['reference']))
+            // Set subscription type if corresponds and update total
+            if (isset($item['reference'])) {
                 $item['type'] = 'subscription';
+
+                if (isset($item['total']))
+                    $total -= $item['total'];
+            }
 
             // Get merchants from items
             if (isset($item['entity']))
@@ -97,7 +101,7 @@ class Checkout
             'uri'    => 'checkout',
             'method' => 'POST',
             'body'   => \Mobbex\Platform::hook($hookName, true, [
-                'total'        => $total,
+                'total'        => (float) $total,
                 'webhook'      => $webhookUrl,
                 'return_url'   => $returnUrl,
                 'reference'    => $this->reference = $this->generateReference($id),
