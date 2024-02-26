@@ -168,13 +168,16 @@ final class Repository
      * 
      * @return string 
      */
-    public static function generateToken($id)
+    public static function generateToken($id = null)
     {
         $apiKey      = \Mobbex\Platform::$settings['api_key'];
         $accessToken = \Mobbex\Platform::$settings['access_token'];
 
+        //Generate key for the hash
+        $key = "{$apiKey}|{$accessToken}" . ($id ? "|{$id}" : "");
+
         return password_hash(
-            "{$apiKey}|{$accessToken}|{$id}",
+            $key,
             PASSWORD_DEFAULT
         );
     }
@@ -182,18 +185,21 @@ final class Repository
     /**
      * Validate a token generated from credentials configured and an unique id.
      * 
-     * @param string|int $id
      * @param mixed $token
+     * @param string|int $id
      * 
      * @return bool True if token is valid.
      */
-    public static function validateToken($id, $token)
+    public static function validateToken($token, $id = null)
     {
-        $apikey      = \Mobbex\Platform::$settings['api_key'];
+        $apiKey      = \Mobbex\Platform::$settings['api_key'];
         $accessToken = \Mobbex\Platform::$settings['access_token'];
 
+        //Generate key to verify
+        $key = "{$apiKey}|{$accessToken}" . ($id ? "|{$id}" : "");
+
         return password_verify(
-            "{$apikey}|{$accessToken}|{$id}",
+            $key,
             $token
         );
     }
