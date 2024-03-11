@@ -80,7 +80,7 @@ class Api
         if (!$result['result'])
             throw new \Mobbex\Exception('Mobbex request error #' . $result['code'] . ': ' . $result['error'], 0, $data);
 
-        return isset($result['data']) ? $result['data'] : $result['result'];
+        return isset($result['data']) && !empty($result['data']) ? $result['data'] : $result['result'];
     }
 
     /**
