@@ -168,19 +168,19 @@ class Checkout
      * 
      * @param string|int $id Unique ID of the instance that will be related to the checkout.
      */
-    public function generateReference($id)
+    public static function generateReference($id)
     {
         $reference = [
             \Mobbex\Platform::$name . '_id:' . $id,
         ];
 
         // Add site id
-        if (!empty($this->settings['site_id']))
-            $reference[] = 'site_id:' . str_replace(' ', '-', trim($this->settings['site_id']));
+        if (!empty(\Mobbex\Platform::$settings['site_id']))
+            $reference[] = 'site_id:' . str_replace(' ', '-', trim(\Mobbex\Platform::$settings['site_id']));
 
         // Add reseller id
-        if (!empty($this->settings['reseller_id']))
-            $reference[] = 'reseller:' . str_replace(' ', '-', trim($this->settings['reseller_id']));
+        if (!empty(\Mobbex\Platform::$settings['reseller_id']))
+            $reference[] = 'reseller:' . str_replace(' ', '-', trim(\Mobbex\Platform::$settings['reseller_id']));
 
         return implode('_', $reference);
     }
