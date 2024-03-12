@@ -51,7 +51,6 @@ class Api
         $curl = curl_init();
 
         curl_setopt_array($curl, [
-            CURLOPT_URL            => self::$apiUrl . $data['uri'] . (!empty($data['params']) ? '?' . http_build_query($data['params']) : null),
             CURLOPT_HTTPHEADER     => self::getHeaders(),
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_MAXREDIRS      => 10,
@@ -59,6 +58,11 @@ class Api
             CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST  => $data['method'],
             CURLOPT_POSTFIELDS     => !empty($data['body']) ? json_encode($data['body']) : null,
+            CURLOPT_URL            => sprintf(
+                "%s$data[uri]%s",
+                !empty($data['url']) ? $data['url'] : self::$apiUrl,
+                !empty($data['params']) ? '?' . http_build_query($data['params']) : ''
+            )
         ]);
 
         $response    = curl_exec($curl);

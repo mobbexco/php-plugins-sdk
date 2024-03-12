@@ -194,4 +194,24 @@ final class Repository
             $token
         );
     }
+
+    /**
+     * Get the last operation from mobbex filtering by reference.
+     * 
+     * @param string $reference
+     * 
+     * @return array|null
+     * 
+     * @throws Exception 
+     */
+    public static function getOperationFromReference($reference)
+    {
+        $result = \Mobbex\Api::request([
+            'method' => 'GET',
+            'url'    => 'https://api.mobbex.com/2.0/',
+            'uri'    => "transactions/coupons/$reference",
+        ]) ?: [];
+
+        return $result ? reset($result) : null;
+    }
 }
