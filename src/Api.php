@@ -58,11 +58,11 @@ class Api
             CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST  => $data['method'],
             CURLOPT_POSTFIELDS     => !empty($data['body']) ? json_encode($data['body']) : null,
-            CURLOPT_URL            => sprintf(
-                "%s$data[uri]%s",
+            CURLOPT_URL            => implode([
                 !empty($data['url']) ? $data['url'] : self::$apiUrl,
+                $data['uri'],
                 !empty($data['params']) ? '?' . http_build_query($data['params']) : ''
-            )
+            ])
         ]);
 
         $response    = curl_exec($curl);
