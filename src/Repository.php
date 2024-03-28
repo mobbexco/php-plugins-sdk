@@ -4,6 +4,21 @@ namespace Mobbex;
 
 final class Repository
 {
+    public static function sortList($sort, $listToSort)
+    {
+        $sorted = [];
+
+        foreach ($sort as $key)
+            if(array_key_exists($key, $listToSort))
+                $sorted[$key] = $listToSort[$key];
+
+        foreach ($listToSort as $key => $value)
+            if (!isset($sorted[$key]))
+                $sorted[$key] = $value;
+
+        return $sorted;
+    }
+
     /**
      * Get sources from Mobbex.
      * 
@@ -214,4 +229,172 @@ final class Repository
 
         return $result ? reset($result) : null;
     }
+
+
+    /** NEW PLANS FILTER */
+
+    /**
+     * Gets sources from API sources & return it formated.
+     * If there are stored sources updates his values.
+     * 
+     * @param array $storedSources
+     * 
+     * @return array
+     */
+    public static function getFormatedSources($storedSources = [], $sort = [])
+    {
+        $srcList = array();
+
+        // Add stored sources to srcList by his reference
+        foreach ($storedSources as $source)
+            $srcList[$source["reference"]] = $source;
+
+        // Add common plans
+        $srcList = self::formatSources($srcList, self::getSources(), $sort);
+
+        // Add advanced plans
+        $srcList = self::formatSources($srcList, self::getSourcesAdvanced(), $sort);
+
+        return array_values($srcList);
+    }
+
+    /**
+     * Returns the sources formatted for being used in the new plans filter template.
+     * 
+     * @param array $srcList A list with the stored sources formatted.
+     * @param array $sources A list of sources returned by the api.
+     * 
+     * @return array
+     */
+    public static function formatSources($srcList, $sources, $sort)
+    {
+        foreach ($sources as $source) {
+
+            $reference = $source['source']['reference'];
+            $instList  = array();
+
+            // Add source to list if doesn't exists
+            if (!isset($srcList[$reference])) {
+                $srcList[$reference] = [
+                    'reference'    => $reference,
+                    'name'         => $source['source']['name'],
+                    'installments' => []
+                ];
+            }
+
+            //Extract the stored installments
+            foreach ($srcList[$reference]['installments'] as $installment)
+                $instList[$installment['uid']] = $installment;
+
+            if (isset($source['installments']['enabled']) && !$source['installments']['enabled'])
+                continue;
+
+            // Detect type of installments
+            $advanced     = !isset($source['installments']['list']);
+            $installments = $advanced ? $source['installments'] : $source['installments']['list'];
+
+            //Format the installments list for being used in new plans filter
+            foreach ($installments as $installment) {
+                if (!isset($instList[$installment['uid']])) {
+                    $instList[$installment['uid']] = [
+                        'uid'         => $installment['uid'],
+                        'reference'   => $advanced ? null : $installment['reference'],
+                        'name'        => $installment['name'],
+                        'description' => $installment['description'],
+                        'advanced'    => $advanced,
+                        'active'      => !$advanced,
+                    ];
+                } else {
+                    $instList[$installment['uid']]['name']        = $installment['name'];
+                    $instList[$installment['uid']]['reference']   = $advanced ? null : $installment['reference'];
+                    $instList[$installment['uid']]['description'] = $installment['description'];
+                }
+            }
+
+            // Sort the plans
+            if($sort)
+                $instList = self::sortList($sort[$reference], $instList);
+
+            // Add installments formated to sources list
+            $srcList[$reference]['installments'] = array_values($instList);
+        }
+
+        // Sort the sources
+        if ($sort)
+            $srcList = self::sortList(array_keys($sort), $srcList);
+
+        return $srcList;
+    }
+
+    /**
+     * Returns a sorted list of sources with their installments.
+     * 
+     * @param array $configuredPlans A list of sources configured for a product/category
+     * 
+     * @return array
+     */
+    public static function getPlansSortOrder($configuredPlans)
+    {
+        $sortedPlans = [];
+
+        foreach ($configuredPlans as $source) {
+            $sortedPlans[$source['reference']] = [];
+
+            if (!isset($source['installments']))
+                continue;
+
+            foreach ($source['installments'] as $installment)
+                $sortedPlans[$source['reference']][] = $installment['uid'];
+        }
+
+        return $sortedPlans;
+    }
+
+    /**
+     * Sort in the given order a list of sources.
+     * 
+     * @param array $sources List of sources.
+     * @param array $sortOrder Order to sort sources & their installments.
+     * 
+     * @return array 
+     */
+    public static function sortSources($sources, $sortOrder)
+    {
+        $sortedSources = [];
+
+        //Sort sources
+        foreach ($sortOrder as $sourceRef => $uids) {
+            foreach ($sources as $source){
+                if ($source['source']['reference'] === $sourceRef && !isset($sortedSources[$sourceRef])){
+                    $sortedSources[$sourceRef] = $source;
+                } elseif($source['source']['reference'] === $sourceRef && isset($sortedSources[$sourceRef]['installments']['list'])) {
+                    $sortedSources[$sourceRef]['installments']['list'] = array_merge(
+                        $sortedSources[$sourceRef]['installments']['list'],
+                        $source['installments']['list']
+                    );
+                }
+
+            }
+        }
+
+        //Sort their installments
+        foreach ($sortedSources as $sourceRef => &$source) {
+            $sortedPlans = [];
+
+            foreach ($sortOrder[$sourceRef] as $uid) {
+                $index = array_search(
+                    $uid,
+                    array_column($source['installments']['list'], 'uid')
+                );
+                
+                if ($index !== false)
+                    $sortedPlans[] = $source['installments']['list'][$index];
+            }
+
+            $source['installments'] = $sortedPlans;
+        }
+
+        return $sortedSources;
+    }
+
 }
