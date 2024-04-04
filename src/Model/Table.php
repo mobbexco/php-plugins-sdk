@@ -182,9 +182,16 @@ class Table
         $columns = $this->getColumns();
 
         //Check column definition
-        foreach ($this->definition as $column)
-            if(!in_array($column, $columns))
+        foreach ($this->definition as $column) {
+            if (!in_array($column, $columns)) {
+                \Mobbex\Platform::log(
+                    'debug',
+                    'Table > checkTableDefinition | definition & db table are diferent:',
+                    ['table' => $this->table, 'column' => $column['Field'], 'definition' => $this->definition, 'columns' => $columns]
+                );
                 return false;
+            }
+        }
 
         //Drop deprecated columns
         foreach ($columns as $column)
@@ -240,8 +247,10 @@ class Table
 
         //Return false if collation isnt utf8mb4
         foreach ($columnData as $data) {
-            if(!empty($data['Collation']) && $data['Collation'] !== 'utf8mb4_general_ci')
-                false;
+            if(!empty($data['Collation']) && $data['Collation'] !== 'utf8mb4_general_ci') {
+                \Mobbex\Platform::log('debug', 'Table > checkCharset | empty or wrong collation:', $data);
+                return false;
+            }
         }
 
         //If looks good return true
