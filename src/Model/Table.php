@@ -161,8 +161,13 @@ class Table
     {
         $columns = $this->db->query("SHOW COLUMNS FROM $this->table;") ?: [];
 
-        // Sort current db coluns by keys (do not use array_walk)
-        foreach ($columns as &$column) ksort($column);
+        // Sort current db colums by keys (do not use array_walk)
+        foreach ($columns as &$column) {
+            ksort($column);
+
+            if ($column['Default'] === 'CURRENT_TIMESTAMP')
+                $column['Default'] = 'current_timestamp()';
+        }
 
         return $columns ?: [];
     } 
