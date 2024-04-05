@@ -99,7 +99,7 @@ class Table
         if(!$this->checkCharset())
             $this->db->query("ALTER TABLE `$this->table` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;");
             
-        return $this->checkTableDefinition();
+        return $this->checkTableDefinition(true);
     }
 
     /**
@@ -175,20 +175,24 @@ class Table
     /**
      * Check if the table definition is correct.
      * 
+     * @param bool $log To log the result of column check
+     * 
      * @return bool 
      */
-    public function checkTableDefinition()
+    public function checkTableDefinition($log = false)
     {
         $columns = $this->getColumns();
 
         //Check column definition
         foreach ($this->definition as $column) {
             if (!in_array($column, $columns)) {
+
                 \Mobbex\Platform::log(
-                    'debug',
+                    $log ? 'error' : 'debug',
                     'Table > checkTableDefinition | definition & db table are diferent:',
                     ['table' => $this->table, 'column' => $column['Field'], 'definition' => $this->definition, 'columns' => $columns]
                 );
+
                 return false;
             }
         }
@@ -199,7 +203,7 @@ class Table
                 $this->db->query("ALTER TABLE $this->table DROP COLUMN " . $column['Field'] . ";");
 
         //Check that the table has the correct charset
-        return $this->checkCharset();
+        return $this->checkCharset($log);
     }
 
     /**
@@ -238,9 +242,11 @@ class Table
     /**
      * Check if the charset is utf8mb4.
      * 
+     * @param bool $log Log the result of the check.
+     * 
      * @return bool
      */
-    public function checkCharset()
+    public function checkCharset($log = false)
     {
         //Get columns data
         $columnData = $this->db->query("SHOW FULL COLUMNS FROM $this->table;");
@@ -248,7 +254,7 @@ class Table
         //Return false if collation isnt utf8mb4
         foreach ($columnData as $data) {
             if(!empty($data['Collation']) && $data['Collation'] !== 'utf8mb4_general_ci') {
-                \Mobbex\Platform::log('debug', 'Table > checkCharset | empty or wrong collation:', $data);
+                \Mobbex\Platform::log($log ? 'error' : 'debug', 'Table > checkCharset | empty or wrong collation:', $data);
                 return false;
             }
         }
