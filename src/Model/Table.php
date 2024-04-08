@@ -97,7 +97,7 @@ class Table
         );
         
         if(!$this->checkCharset())
-            $this->db->query("ALTER TABLE `$this->table` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;");
+            $this->changeCharset();
             
         return $this->checkTableDefinition(true);
     }
@@ -261,5 +261,14 @@ class Table
 
         //If looks good return true
         return true;
+    }
+
+    /**
+     * Changes the charset of each column of the table.
+     */
+    public function changeCharset()
+    {
+        foreach ($this->definition as $column)
+            $this->db->query("ALTER TABLE `$this->table` MODIFY ". $column['field'] ." ". strtoupper($column['Type']) ." CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;");
     }
 }
