@@ -4,6 +4,14 @@ namespace Mobbex;
 
 final class Repository
 {
+    /**
+     * This method sort a list based in the order of a list of keys.
+     * 
+     * @param $sort List of keys
+     * @param $listToSort List to sort based in kys array.
+     * 
+     * @return array
+     */
     public static function sortList($sort, $listToSort)
     {
         $sorted = [];
@@ -238,6 +246,7 @@ final class Repository
      * If there are stored sources updates his values.
      * 
      * @param array $storedSources
+     * @param array $sort
      * 
      * @return array
      */
@@ -262,20 +271,20 @@ final class Repository
      * Returns the sources formatted for being used in the new plans filter template.
      * 
      * @param array $srcList A list with the stored sources formatted.
-     * @param array $sources A list of sources returned by the api.
+     * @param array $apiSources A list of sources returned by the api.
      * 
      * @return array
      */
-    public static function formatSources($srcList, $sources, $sort)
+    public static function formatSources($storedSources, $apiSources, $sort)
     {
-        foreach ($sources as $source) {
+        foreach ($apiSources as $source) {
 
             $reference = $source['source']['reference'];
             $instList  = array();
 
             // Add source to list if doesn't exists
-            if (!isset($srcList[$reference])) {
-                $srcList[$reference] = [
+            if (!isset($storedSources[$reference])) {
+                $storedSources[$reference] = [
                     'reference'    => $reference,
                     'name'         => $source['source']['name'],
                     'installments' => []
@@ -283,7 +292,7 @@ final class Repository
             }
 
             //Extract the stored installments
-            foreach ($srcList[$reference]['installments'] as $installment)
+            foreach ($storedSources[$reference]['installments'] as $installment)
                 $instList[$installment['uid']] = $installment;
 
             if (isset($source['installments']['enabled']) && !$source['installments']['enabled'])
@@ -316,14 +325,14 @@ final class Repository
                 $instList = self::sortList($sort[$reference], $instList);
 
             // Add installments formated to sources list
-            $srcList[$reference]['installments'] = array_values($instList);
+            $storedSources[$reference]['installments'] = array_values($instList);
         }
 
         // Sort the sources
         if ($sort)
-            $srcList = self::sortList(array_keys($sort), $srcList);
+            $storedSources = self::sortList(array_keys($sort), $storedSources);
 
-        return $srcList;
+        return $storedSources;
     }
 
     /**
