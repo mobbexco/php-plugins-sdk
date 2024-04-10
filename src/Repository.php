@@ -24,7 +24,7 @@ final class Repository
             if (!isset($sorted[$key]))
                 $sorted[$key] = $value;
 
-        return $sorted;
+        return $sorted ?: $listToSort;
     }
 
     /**
@@ -277,6 +277,8 @@ final class Repository
      */
     public static function formatSources($storedSources, $apiSources, $sort)
     {
+        $formatedSources = array();
+
         foreach ($apiSources as $source) {
 
             $reference = $source['source']['reference'];
@@ -284,7 +286,7 @@ final class Repository
 
             // Add source to list if doesn't exists
             if (!isset($storedSources[$reference])) {
-                $storedSources[$reference] = [
+                $formatedSources[$reference] = [
                     'reference'    => $reference,
                     'name'         => $source['source']['name'],
                     'installments' => []
@@ -292,8 +294,9 @@ final class Repository
             }
 
             //Extract the stored installments
-            foreach ($storedSources[$reference]['installments'] as $installment)
-                $instList[$installment['uid']] = $installment;
+            if(isset($storedSources[$reference]))
+                foreach ($storedSources[$reference]['installments'] as $installment)
+                    $instList[$installment['uid']] = $installment;
 
             if (isset($source['installments']['enabled']) && !$source['installments']['enabled'])
                 continue;
@@ -321,18 +324,18 @@ final class Repository
             }
 
             // Sort the plans
-            if($sort)
+            if($sort && isset($sort[$reference]))
                 $instList = self::sortList($sort[$reference], $instList);
 
             // Add installments formated to sources list
-            $storedSources[$reference]['installments'] = array_values($instList);
+            $formatedSources[$reference]['installments'] = array_values($instList);
         }
 
         // Sort the sources
         if ($sort)
-            $storedSources = self::sortList(array_keys($sort), $storedSources);
+            $formatedSources = self::sortList(array_keys($sort), $storedSources);
 
-        return $storedSources;
+        return $formatedSources;
     }
 
     /**
