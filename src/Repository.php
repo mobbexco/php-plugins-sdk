@@ -20,11 +20,7 @@ final class Repository
             if(array_key_exists($key, $listToSort))
                 $sorted[$key] = $listToSort[$key];
 
-        foreach ($listToSort as $key => $value)
-            if (!isset($sorted[$key]))
-                $sorted[$key] = $value;
-
-        return $sorted ?: $listToSort;
+        return array_merge($sorted, $listToSort);
     }
 
     /**
@@ -251,89 +247,83 @@ final class Repository
      * @return array
      */
     public static function getFormatedSources($storedSources = [], $sort = [])
-    {
-        $srcList = array();
+    {   
+        $sources = self::formatSources(
+            array_column($storedSources, null, 'reference'),
+            $sort
+        );
 
-        // Add stored sources to srcList by his reference
-        foreach ($storedSources as $source)
-            $srcList[$source["reference"]] = $source;
+        //Sort the sources
+        if ($sort)
+            $sources = self::sortList(array_keys($sort), $sources);
 
-        // Add common plans
-        $srcList = self::formatSources($srcList, self::getSources(), $sort);
-
-        // Add advanced plans
-        $srcList = self::formatSources($srcList, self::getSourcesAdvanced(), $sort);
-
-        return array_values($srcList);
+        return array_values($sources);
     }
 
     /**
      * Returns the sources formatted for being used in the new plans filter template.
      * 
      * @param array $srcList A list with the stored sources formatted.
-     * @param array $apiSources A list of sources returned by the api.
+     * @param array $sort A list with the plans sort order.
      * 
      * @return array
      */
-    public static function formatSources($storedSources, $apiSources, $sort)
+    public static function formatSources($storedSources, $sort)
     {
-        $formatedSources = array();
+        $formatedSources = $instList  = array();
 
-        foreach ($apiSources as $source) {
+        foreach (array_merge(self::getSources(), self::getSourcesAdvanced()) as $source) {
 
             $reference = $source['source']['reference'];
-            $instList  = array();
 
-            // Add source to list if doesn't exists
-            if (!isset($storedSources[$reference])) {
+            // Add source to list if not exists
+            if(!isset($formatedSources[$reference])) {
                 $formatedSources[$reference] = [
                     'reference'    => $reference,
                     'name'         => $source['source']['name'],
                     'installments' => []
                 ];
             }
-
-            //Extract the stored installments
-            if(isset($storedSources[$reference]))
-                foreach ($storedSources[$reference]['installments'] as $installment)
-                    $instList[$installment['uid']] = $installment;
-
+            
+            //Continue if source didn't have plans
             if (isset($source['installments']['enabled']) && !$source['installments']['enabled'])
                 continue;
 
             // Detect type of installments
-            $advanced     = !isset($source['installments']['list']);
-            $installments = $advanced ? $source['installments'] : $source['installments']['list'];
+            $advanced           = !isset($source['installments']['list']);
+            $installments       = $advanced ? $source['installments'] : $source['installments']['list'];
+
+            //Get the installments stored in db for this source
+            $storedInstallments = isset($storedSources[$reference]) ? array_column($storedSources[$reference]['installments'], null, 'uid') : [];
 
             //Format the installments list for being used in new plans filter
             foreach ($installments as $installment) {
-                if (!isset($instList[$installment['uid']])) {
-                    $instList[$installment['uid']] = [
-                        'uid'         => $installment['uid'],
-                        'reference'   => $advanced ? null : $installment['reference'],
-                        'name'        => $installment['name'],
-                        'description' => $installment['description'],
-                        'advanced'    => $advanced,
-                        'active'      => !$advanced,
-                    ];
-                } else {
-                    $instList[$installment['uid']]['name']        = $installment['name'];
-                    $instList[$installment['uid']]['reference']   = $advanced ? null : $installment['reference'];
-                    $instList[$installment['uid']]['description'] = $installment['description'];
-                }
+
+                //Get installment uid
+                $uid = $installment['uid'];
+
+                //Get installment data
+                $instList[$reference][$uid] = [
+                    'uid'         => $uid,
+                    'reference'   => $advanced ? null : $installment['reference'],
+                    'name'        => $installment['name'],
+                    'description' => $installment['description'],
+                    'advanced'    => $advanced,
+                    'active'      => !$advanced,
+                ];
+
+                //Update installment with stored data.
+                if(isset($storedInstallments[$uid]))
+                    $instList[$uid]['active'] = $storedInstallments[$uid]['active'];
             }
 
             // Sort the plans
             if($sort && isset($sort[$reference]))
-                $instList = self::sortList($sort[$reference], $instList);
+                $instList[$reference] = self::sortList($sort[$reference], $instList[$reference]);
 
             // Add installments formated to sources list
-            $formatedSources[$reference]['installments'] = array_values($instList);
+            $formatedSources[$reference]['installments'] = array_values($instList[$reference]);
         }
-
-        // Sort the sources
-        if ($sort)
-            $formatedSources = self::sortList(array_keys($sort), $storedSources);
 
         return $formatedSources;
     }
