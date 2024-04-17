@@ -253,8 +253,8 @@ class Table
 
         //Return false if collation isnt utf8mb4
         foreach ($columnData as $data) {
-            if (!empty($data['Collation']) && $data['Type'] === 'text' && $data['Collation'] !== 'utf8mb4_general_ci') {
-                \Mobbex\Platform::log($log ? 'error' : 'debug', 'Table > checkCharset | empty or wrong collation:', $data);
+            if (!empty($data['Collation']) && in_array($data['Type'], ['text', 'longtext']) && $data['Collation'] !== 'utf8mb4_general_ci') {
+                \Mobbex\Platform::log($log ? 'error' : 'debug', 'Table > checkCharset | empty or wrong collation:', ['table' => $this->table, 'column_data' => $data]);
                 return false;
             }
         }
@@ -269,7 +269,12 @@ class Table
     public function changeCharset()
     {
         foreach ($this->definition as $column)
-            if($column['Type'] === 'text')
-                $this->db->query("ALTER TABLE `$this->table` MODIFY " . $column['Field'] . " " . strtoupper($column['Type']) . " CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;");
+            if(in_array($column['Type'], ['text', 'longtext']))
+                $this->db->query(
+                    "ALTER TABLE `$this->table` MODIFY `" .
+                    $column['Field'] . "` " . strtoupper($column['Type']) .
+                    " CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci " .
+                    ($column['Null'] == 'NO' ? 'NOT NULL;' : ';')
+                );
     }
 }
