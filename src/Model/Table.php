@@ -269,7 +269,7 @@ class Table
     public function changeCharset()
     {
         foreach ($this->definition as $column)
-            if($column['Type'] === 'TEXT')
+            if($column['Type'] === 'text')
                 $this->db->query("ALTER TABLE `$this->table` MODIFY " . $column['field'] . " " . strtoupper($column['Type']) . " CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;");
     }
 }
