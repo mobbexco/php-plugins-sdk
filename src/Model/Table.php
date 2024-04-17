@@ -253,7 +253,7 @@ class Table
 
         //Return false if collation isnt utf8mb4
         foreach ($columnData as $data) {
-            if(!empty($data['Collation']) && $data['Collation'] !== 'utf8mb4_general_ci') {
+            if (!empty($data['Collation']) && $data['Type'] === 'text' && $data['Collation'] !== 'utf8mb4_general_ci') {
                 \Mobbex\Platform::log($log ? 'error' : 'debug', 'Table > checkCharset | empty or wrong collation:', $data);
                 return false;
             }
@@ -269,6 +269,7 @@ class Table
     public function changeCharset()
     {
         foreach ($this->definition as $column)
-            $this->db->query("ALTER TABLE `$this->table` MODIFY ". $column['field'] ." ". strtoupper($column['Type']) ." CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;");
+            if($column['Type'] === 'TEXT')
+                $this->db->query("ALTER TABLE `$this->table` MODIFY " . $column['field'] . " " . strtoupper($column['Type']) . " CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;");
     }
 }
