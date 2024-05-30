@@ -12,7 +12,10 @@
     "autoload": {
         "psr-4": {
             "Mobbex\\": "src/"
-        }
+        },
+        "files": [
+            "src/utils/functions.php"
+        ]
     },
     "require-dev": {
         "phpunit/phpunit": "^9"
