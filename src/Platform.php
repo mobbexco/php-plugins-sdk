@@ -16,7 +16,11 @@ final class Platform
     /** Key-Value array with current extensions and their versions */
     public static $extensions = [];
 
-    /** Default settings values */
+    /** 
+     * Default settings values
+     * 
+     * @var string[]|bool[]|array[]|null[]
+     */
     public static $settings = [
         'api_key'                            => null,
         'access_token'                       => null,
@@ -40,6 +44,7 @@ final class Platform
         'emit_customer_waiting_notification' => true,
         'embed_version'                      => '1.0.23',
         'return_timeout'                     => '5',
+        'sources_priority'                   => [],
     ];
 
     /** @var \Mobbex\Model\Cache */

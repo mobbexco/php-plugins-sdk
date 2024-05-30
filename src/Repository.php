@@ -30,7 +30,8 @@ final class Repository
             'uri'    => "sources" . ($query ? "?$query" : '')
         ]) ?: [];
 
-        // Save sources in mobbex cache table with literal coding if there is any
+        // Sort sources if it required and save to cache
+        multisortByIndex($sources, \Mobbex\Platform::$settings['sources_priority'], 'source.reference');
         if($sources)
             \Mobbex\Platform::$cache->store($key, json_encode($sources, JSON_UNESCAPED_UNICODE));
         
