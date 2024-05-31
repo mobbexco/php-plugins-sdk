@@ -12,7 +12,7 @@ namespace Mobbex;
  * @see \Mobbex\arrayAt() to more info on paths.
  */
 function multisortByIndex(&$array, $indexes, $indexPath) {
-    if (!$array || !$indexes)
+    if (!$array || !$indexes || !is_array($array) || !is_array($indexes))
         return;
 
     usort($array, function($a, $b) use($indexes, $indexPath) {

@@ -45,6 +45,7 @@ final class Platform
         'embed_version'                      => '1.0.23',
         'return_timeout'                     => '5',
         'sources_priority'                   => [],
+        'advanced_plans_exclusivity'         => true,
     ];
 
     /** @var \Mobbex\Model\Cache */
