@@ -46,4 +46,20 @@ function arrayAt($array, $path) {
     }
 
     return $currentPos;
-  }
+}
+
+/**
+ * Try to decode a json value.
+ * 
+ * @param mixed $value
+ * 
+ * @return mixed If the value is json returns an associative array.
+ */
+function maybeDecodeJson(&$value) {
+    if (!is_string($value))
+        return $value;
+
+    $jsonDecoded = json_decode($value, true);
+
+    return json_last_error() === JSON_ERROR_NONE ? $jsonDecoded : $value;
+}

@@ -31,7 +31,12 @@ final class Repository
         ]) ?: [];
 
         // Sort sources if it required and save to cache
-        multisortByIndex($sources, \Mobbex\Platform::$settings['sources_priority'], 'source.reference');
+        multisortByIndex(
+            $sources,
+            maybeDecodeJson(\Mobbex\Platform::$settings['sources_priority']),
+            'source.reference'
+        );
+
         if($sources)
             \Mobbex\Platform::$cache->store($key, json_encode($sources, JSON_UNESCAPED_UNICODE));
         
@@ -83,6 +88,8 @@ final class Repository
             // Only if have installments
             if (empty($source['installments']['list']))
                 continue;
+
+            $sourceNames[$source['source']['reference']] = $source['source']['name'];
 
             // Create field array data
             foreach ($source['installments']['list'] as $plan) {
