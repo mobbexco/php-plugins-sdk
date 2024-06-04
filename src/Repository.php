@@ -147,9 +147,9 @@ final class Repository
 
         // Add active (advanced) plans to installments only if the plan is active on all products
         foreach (array_count_values($advancedPlans) as $plan => $reps) {
-            $bypassRepsValidation = \Mobbex\Platform::$settings['advanced_plans_exclusivity'] === false;
+            $plansExclusivity = \Mobbex\Platform::$settings['advanced_plans_exclusivity'];
 
-            if ($bypassRepsValidation || $reps == count($items))
+            if ((!$plansExclusivity && $plansExclusivity !== null) || $reps == count($items))
                 $installments[] = '+uid:' . $plan;
         }
 
