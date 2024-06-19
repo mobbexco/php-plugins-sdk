@@ -33,11 +33,12 @@ class Cache
      * Get data stored in mobbex chache table.
      * 
      * @param string $key Identifier key for cache data.
+     * @param int    $interval Interval to check if data is expired
      * 
      * @return string|bool $data Data to store.
      * 
      */
-    public function get($key){}
+    public function get($key, $interval = 0){}
 
     /**
      * Delete expired stored data in cache table.
