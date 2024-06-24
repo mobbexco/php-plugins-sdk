@@ -233,4 +233,26 @@ final class Repository
 
         return $result ? reset($result) : null;
     }
+
+    /**
+     * Returns a value converted from one currency to another.
+     * 
+     * @param float|int $total Value to convert
+     * @param string $from Initial currency
+     * @param string $to Currency to convert
+     * 
+     * @return float
+     */
+    public static function convertCurrency($total, $from, $to = 'ARS')
+    {
+        if (empty($from) || $from === $to)
+            return (float) $total;
+
+        $response = \Mobbex\Api::request([
+            'method' => 'GET',
+            'uri'    => "currency/convert?from=$from&to=$to&total=$total"
+        ]) ?: [];
+        
+        return $response;
+    }
 }

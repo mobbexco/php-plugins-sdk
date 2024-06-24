@@ -104,7 +104,7 @@ class Checkout
             'uri'    => 'checkout',
             'method' => 'POST',
             'body'   => \Mobbex\Platform::hook($hookName, true, [
-                'total'        => $this->settings['convert_currency'] ? self::convertCurrency($total, $fromCurrency) : $total,
+                'total'        => $this->settings['convert_currency'] ? \Mobbex\Repository::convertCurrency($total, $fromCurrency) : $total,
                 'webhook'      => $webhookUrl,
                 'return_url'   => $returnUrl,
                 'reference'    => $this->reference = $this->generateReference($id),
@@ -186,29 +186,5 @@ class Checkout
             $reference[] = 'reseller:' . str_replace(' ', '-', trim(\Mobbex\Platform::$settings['reseller_id']));
 
         return implode('_', $reference);
-    }
-
-    /**
-     * Returns a value converted from one currency to another.
-     * 
-     * @param float|int $total Value to convert
-     * @param string $from Initial currency
-     * @param string $to Currency to convert
-     * 
-     * @return float
-     */
-    public static function convertCurrency($total, $from, $to = 'ARS')
-    {
-        if(empty($from) || $from === $to)
-            return (float) $total;
-
-        $response = \Mobbex\Api::request([
-            'method' => 'GET',
-            'uri'    => "currency/convert?from=$from&to=$to&total=$total" 
-        ]) ?: [];
-        
-        return !empty($response) 
-            ? (float) $response['result'] 
-            : \Mobbex\Platform::log('error', 'Checkout > covertCurrency | Failed to convert currecncy: ', compact('total', 'from', 'to', 'response'));
     }
 }
