@@ -66,6 +66,8 @@ class Checkout
      * @param string $webhooksType Type of webhooks to send. Can be "all" | "none" | "final" | "intermediateAndFinal"
      * @param string $hookName Name of hook to execute when body is filtered.
      * @param string $description Allow to modify the default operation description in the console.
+     * @param string $description Allow to modify the default operation description in the console.
+     * @param string $fromCurrency Currency code of the actual total.
      */
     public function __construct(
         $id,
@@ -78,7 +80,8 @@ class Checkout
         $addresses = [],
         $webhooksType = 'all',
         $hookName = 'mobbexCheckoutRequest',
-        $description = null
+        $description = null,
+        $fromCurrency = null
     ) {
         $this->settings = \Mobbex\Platform::$settings;
 
@@ -101,7 +104,7 @@ class Checkout
             'uri'    => 'checkout',
             'method' => 'POST',
             'body'   => \Mobbex\Platform::hook($hookName, true, [
-                'total'        => (float) $total,
+                'total'        => $this->settings['convert_currency'] ? \Mobbex\Repository::convertCurrency($total, $fromCurrency) : $total,
                 'webhook'      => $webhookUrl,
                 'return_url'   => $returnUrl,
                 'reference'    => $this->reference = $this->generateReference($id),
