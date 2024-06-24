@@ -255,4 +255,30 @@ final class Repository
         
         return $response;
     }
+
+    /**
+     * Get subscription from API or cache.
+     * 
+     * @param string $uid subscription uid
+     * @param bool   $useCache use cache table
+     * 
+     * @return array mobbex subscription | integration subscription
+     */
+    public static function getProductSubscription($uid, $useCache = false)
+    {
+        // Maybe checks if subscription exists in cache table
+        $subscription = $useCache ? \Mobbex\Platform::$cache->get('subscription_uid:'. $uid, 86400) : null;
+
+        // If subscription doesn`t exists, try to get it from API
+        if (!$subscription){
+            $subscription = \Mobbex\Api::request([
+                'method' => 'GET',
+                'uri'    => "subscriptions/" . $uid
+            ]) ?: [];
+            
+            if ($useCache)
+                \Mobbex\Platform::$cache->store('subscription_uid:'. $uid, json_encode($subscription));
+        }
+        return $subscription;
+    }
 }
