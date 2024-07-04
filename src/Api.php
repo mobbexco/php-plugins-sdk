@@ -82,7 +82,11 @@ class Api
             throw new \Mobbex\Exception('Mobbex request error: Invalid response format', 0, $data);
 
         if (!$result['result'])
-            throw new \Mobbex\Exception('Mobbex request error #' . $result['code'] . ': ' . $result['error'], 0, $data);
+            throw new \Mobbex\Exception(sprintf(
+                'Mobbex request error #%s: %s',
+                isset($result['code']) ? $result['code'] : 'NOCODE',
+                isset($result['error']) ? $result['error'] : 'NOERROR'
+            ), 0, $data);
 
         return isset($result['data']) ? $result['data'] : $result['result'];
     }
