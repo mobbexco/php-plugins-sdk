@@ -46,7 +46,8 @@ final class Platform
         'return_timeout'                     => '5',
         'sources_priority'                   => [],
         'advanced_plans_exclusivity'         => true,
-        'convert_currency'                   => false
+        'convert_currency'                   => false,
+        'show_interest_labels'               => true,
     ];
 
     /** @var \Mobbex\Model\Cache */
