@@ -131,6 +131,7 @@ class Checkout
                     'emitCustomerFailureNotification' => (bool) $this->settings['emit_customer_failure_notification'],
                     'emitCustomerWaitingNotification' => (bool) $this->settings['emit_customer_waiting_notification'],
                     'closeOrReturnTimeout'            => $this->settings['return_timeout'],
+                    'showNoInterestLabels'            => (bool) $this->settings['show_no_interest_labels'],
                     'redirect'                        => [
                         'success' => true,
                         'failure' => false,
