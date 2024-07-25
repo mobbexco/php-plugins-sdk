@@ -68,6 +68,7 @@ class Checkout
      * @param string $description Allow to modify the default operation description in the console.
      * @param string $description Allow to modify the default operation description in the console.
      * @param string $fromCurrency Currency code of the actual total.
+     * @param string $reference for the checkout.
      */
     public function __construct(
         $id,
@@ -81,9 +82,11 @@ class Checkout
         $webhooksType = 'all',
         $hookName = 'mobbexCheckoutRequest',
         $description = null,
-        $fromCurrency = null
+        $fromCurrency = null,
+        $reference = ''
     ) {
-        $this->settings = \Mobbex\Platform::$settings;
+        $this->settings  = \Mobbex\Platform::$settings;
+        $this->reference = $reference ?: self::generateReference($id);
 
         foreach ($items as &$item) {
             // Set subscription type if corresponds and update total
@@ -107,7 +110,7 @@ class Checkout
                 'total'        => $this->settings['convert_currency'] ? \Mobbex\Repository::convertCurrency($total, $fromCurrency) : $total,
                 'webhook'      => $webhookUrl,
                 'return_url'   => $returnUrl,
-                'reference'    => $this->reference = $this->generateReference($id),
+                'reference'    => $this->reference,
                 'description'  => $description ?: "Pedido #$id",
                 'intent'       => $this->settings['payment_mode'],
                 'test'         => (bool) $this->settings['test'],
@@ -180,8 +183,8 @@ class Checkout
 
         // Add site id
         if (!empty(\Mobbex\Platform::$settings['site_id']))
-            $reference[] = 'site_id:' . str_replace(' ', '-', trim(\Mobbex\Platform::$settings['site_id']));
-
+        $reference[] = 'site_id:' . str_replace(' ', '-', trim(\Mobbex\Platform::$settings['site_id']));
+    
         // Add reseller id
         if (!empty(\Mobbex\Platform::$settings['reseller_id']))
             $reference[] = 'reseller:' . str_replace(' ', '-', trim(\Mobbex\Platform::$settings['reseller_id']));
