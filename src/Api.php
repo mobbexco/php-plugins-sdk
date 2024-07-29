@@ -83,10 +83,15 @@ class Api
 
         if (!$result['result'])
             throw new \Mobbex\Exception(sprintf(
-                'Mobbex request error #%s: %s',
+                'Mobbex request error #%s: %s %s',
                 isset($result['code']) ? $result['code'] : 'NOCODE',
-                isset($result['error']) ? $result['error'] : 'NOERROR'
+                isset($result['error']) ? $result['error'] : 'NOERROR',
+                isset($result['status_message']) ? $result['status_message'] : 'NOMESSAGE'
             ), 0, $data);
+
+        // Return raw response if requested
+        if (!empty($data['raw']))
+            return $result;
 
         return isset($result['data']) ? $result['data'] : $result['result'];
     }
