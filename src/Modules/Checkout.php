@@ -83,7 +83,8 @@ class Checkout
         $hookName = 'mobbexCheckoutRequest',
         $description = null,
         $fromCurrency = null,
-        $reference = ''
+        $reference = '',
+        $currency  = 'ARS'
     ) {
         $this->settings  = \Mobbex\Platform::$settings;
         $this->reference = $reference ?: self::generateReference($id);
@@ -124,6 +125,7 @@ class Checkout
                 'customer'     => $customer,
                 'addresses'    => $addresses,
                 'webhooksType' => $webhooksType,
+                'currency'     => $currency,
                 'options'      => [
                     'embed'                           => (bool) $this->settings['embed'],
                     'embedVersion'                    => $this->settings['embed_version'],
