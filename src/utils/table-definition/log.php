@@ -11,5 +11,5 @@ return [
     ['Field' => 'type',          'Type' => 'text',      'Null' => 'NO', 'Key' => '',    'Default' => null, 'Extra' => ''],
     ['Field' => 'message',       'Type' => 'text',      'Null' => 'NO', 'Key' => '',    'Default' => null, 'Extra' => ''],
     ['Field' => 'data',          'Type' => 'text',      'Null' => 'NO', 'Key' => '',    'Default' => null, 'Extra' => ''],
-    ['Field' => 'creation_date', 'Type' => 'timestamp', 'Null' => 'NO', 'Key' => '',    'Default' => 'current_timestamp()', 'Extra' => '']
+    ['Field' => 'creation_date', 'Type' => 'timestamp', 'Null' => 'NO', 'Key' => '',    'Default' => 'current_timestamp', 'Extra' => '']
 ];
