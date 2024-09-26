@@ -160,15 +160,14 @@ class Table
     public function getColumns()
     {
         $columns = $this->db->query("SHOW COLUMNS FROM $this->table;") ?: [];
-
+        error_log('definition: ' . "\n" . json_encode($this->definition, JSON_PRETTY_PRINT) . "\n", 3, 'log.log');
         // Sort current db colums by keys (do not use array_walk)
-        foreach ($columns as &$column) {
+        foreach ($columns as &$column){
             ksort($column);
-
-            if ($column['Default'] === 'CURRENT_TIMESTAMP')
-                $column['Default'] = 'current_timestamp()';
+            $column = $this->validateValue($column);
         }
-
+    
+        error_log('columns: ' . "\n" . json_encode($columns, JSON_PRETTY_PRINT) . "\n", 3, 'log.log');
         return $columns ?: [];
     } 
 
@@ -276,5 +275,26 @@ class Table
                     " CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci " .
                     ($column['Null'] == 'NO' ? 'NOT NULL;' : ';')
                 );
+    }
+
+    /**
+     * Validates the value of a column.
+     *
+     * @param array $column Column definition array.
+     * 
+     * @return array The normalized column definition.
+     */
+    public function validateValue($column){
+
+        if ($column['Default'] === 'CURRENT_TIMESTAMP')
+            $column['Default'] = 'current_timestamp()';
+
+        if ($column['Extra'] === 'DEFAULT_GENERATED')
+            $column['Extra'] = '';
+
+        if ($column['Type'] === 'int')
+            $column['Type'] = 'int(11)';
+        
+        return $column;
     }
 }
