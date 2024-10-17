@@ -160,14 +160,12 @@ class Table
     public function getColumns()
     {
         $columns = $this->db->query("SHOW COLUMNS FROM $this->table;") ?: [];
-        error_log('definition: ' . "\n" . json_encode($this->definition, JSON_PRETTY_PRINT) . "\n", 3, 'log.log');
         // Sort current db colums by keys (do not use array_walk)
         foreach ($columns as &$column){
             ksort($column);
             $column = $this->validateValue($column);
         }
     
-        error_log('columns: ' . "\n" . json_encode($columns, JSON_PRETTY_PRINT) . "\n", 3, 'log.log');
         return $columns ?: [];
     } 
 
