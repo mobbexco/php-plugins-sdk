@@ -97,6 +97,8 @@ class Checkout
                 if (isset($item['total']))
                     $total -= $item['total'];
             }
+            // Forces float type to item total
+            $item['total'] = isset($item['total']) ? (float) $item['total'] : null;
 
             // Get merchants from items
             if (isset($item['entity']))
