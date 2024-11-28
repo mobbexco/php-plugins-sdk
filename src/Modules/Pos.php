@@ -53,9 +53,14 @@ class Pos
             'uri'    => "pos/$posId",
         ]);
 
-        $terminalPos = array_values(array_filter($pos['terminals'], function ($t) {
-            return $t['subtype'] === 'smartpos';
-        }))[0] ?? null;
+        //Get terminal
+        $terminalPos = null;
+        foreach ($pos['terminals'] as $t) {
+            if ($t['subtype'] === 'smartpos') {
+                $terminalPos = $t;
+                break;
+            }
+        }
 
         if(!$terminalPos)
             throw new \Mobbex\Exception("No physical terminals found for the UID given", 1, $pos);
