@@ -87,7 +87,7 @@ class Checkout
         $currency  = 'ARS'
     ) {
         $this->settings  = \Mobbex\Platform::$settings;
-        $this->reference = $reference ?: self::generateReference($id);
+        $this->reference = $reference ?: \Mobbex\Repository::generateReference($id);
 
         foreach ($items as &$item) {
             // Set subscription type if corresponds and update total
@@ -172,27 +172,5 @@ class Checkout
         $this->methods  = isset($this->response['paymentMethods'])  ? $this->response['paymentMethods']  : [];
         $this->cards    = isset($this->response['wallet'])          ? $this->response['wallet']          : [];
         $this->token    = isset($this->response['intent']['token']) ? $this->response['intent']['token'] : null;
-    }
-
-    /**
-     * Generate a reference.
-     * 
-     * @param string|int $id Unique ID of the instance that will be related to the checkout.
-     */
-    public static function generateReference($id)
-    {
-        $reference = [
-            \Mobbex\Platform::$name . '_id:' . $id,
-        ];
-
-        // Add site id
-        if (!empty(\Mobbex\Platform::$settings['site_id']))
-        $reference[] = 'site_id:' . str_replace(' ', '-', trim(\Mobbex\Platform::$settings['site_id']));
-    
-        // Add reseller id
-        if (!empty(\Mobbex\Platform::$settings['reseller_id']))
-            $reference[] = 'reseller:' . str_replace(' ', '-', trim(\Mobbex\Platform::$settings['reseller_id']));
-
-        return implode('_', $reference);
     }
 }
