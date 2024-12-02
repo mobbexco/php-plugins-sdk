@@ -46,7 +46,7 @@ class Pos
         $reference = ''
     ) {
         $this->settings  = \Mobbex\Platform::$settings;
-        $this->reference = $reference ?: \Mobbex\Repository::generateReference($id);
+        $this->reference = $reference ?: \Mobbex\Modules\Checkout::generateReference($id);
 
         $pos = \Mobbex\Api::request([
             'method' => 'GET',
@@ -56,7 +56,7 @@ class Pos
         //Get terminal
         $terminalPos = null;
         foreach ($pos['terminals'] as $t) {
-            if ($t['subtype'] === 'smartpos') {
+            if ($t['subtype'] === 'mobile') {
                 $terminalPos = $t;
                 break;
             }

@@ -215,28 +215,6 @@ final class Repository
     }
 
     /**
-     * Generate a reference.
-     * 
-     * @param string|int $id Unique ID of the instance that will be related to the checkout.
-     */
-    public static function generateReference($id)
-    {
-        $reference = [
-            \Mobbex\Platform::$name . '_id:' . $id,
-        ];
-
-        // Add site id
-        if (!empty(\Mobbex\Platform::$settings['site_id']))
-            $reference[] = 'site_id:' . str_replace(' ', '-', trim(\Mobbex\Platform::$settings['site_id']));
-
-        // Add reseller id
-        if (!empty(\Mobbex\Platform::$settings['reseller_id']))
-            $reference[] = 'reseller:' . str_replace(' ', '-', trim(\Mobbex\Platform::$settings['reseller_id']));
-
-        return implode('_', $reference);
-    }
-
-    /**
      * Get the last operation from mobbex filtering by reference.
      * 
      * @param string $reference
