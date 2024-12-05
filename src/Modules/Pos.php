@@ -53,7 +53,10 @@ class Pos
             'uri'    => "pos/$posId",
         ]);
 
-        //Get terminal
+        if(!isset($pos['terminals']) || !is_array($pos['terminal']))
+            throw new \Mobbex\Exception("POS Terminals not found", 1, $pos);
+        
+            //Get terminal
         $terminalPos = null;
         foreach ($pos['terminals'] as $t) {
             if ($t['subtype'] === 'mobile') {
