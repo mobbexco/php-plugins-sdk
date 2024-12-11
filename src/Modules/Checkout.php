@@ -187,8 +187,8 @@ class Checkout
 
         // Add site id
         if (!empty(\Mobbex\Platform::$settings['site_id']))
-        $reference[] = 'site_id:' . str_replace(' ', '-', trim(\Mobbex\Platform::$settings['site_id']));
-    
+            $reference[] = 'site_id:' . str_replace(' ', '-', trim(\Mobbex\Platform::$settings['site_id']));
+
         // Add reseller id
         if (!empty(\Mobbex\Platform::$settings['reseller_id']))
             $reference[] = 'reseller:' . str_replace(' ', '-', trim(\Mobbex\Platform::$settings['reseller_id']));
