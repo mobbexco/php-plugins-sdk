@@ -59,7 +59,7 @@ class Pos
             //Get terminal
         $terminalPos = null;
         foreach ($pos['terminals'] as $t) {
-            if ($t['subtype'] === 'mobile') {
+            if ($t['subtype'] === 'smartpos') {
                 $terminalPos = $t;
                 break;
             }
