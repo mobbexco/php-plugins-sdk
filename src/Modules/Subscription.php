@@ -55,9 +55,9 @@ class Subscription
         $features = [],
         $limit = 0,
         $freeTrial = 0,
-        $test = null,
         $signupFee = null,
-        $hookName = 'mobbexSubscriptionRequest'
+        $hookName = 'mobbexSubscriptionRequest',
+        $test = null
     ) {
         $this->settings = \Mobbex\Platform::$settings;
 
