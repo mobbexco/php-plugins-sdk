@@ -38,6 +38,7 @@ class Subscription
      * @param array $features Subscription characteristics
      * @param int $limit Maximum number of executions.
      * @param int $freeTrial Number of free periods.
+     * @param null|bool $test Subscription test mode.
      * @param int|float $signupFee Different initial amount.
      * @param string $hookName Name of hook to execute when body is filtered.
      */
@@ -54,6 +55,7 @@ class Subscription
         $features = [],
         $limit = 0,
         $freeTrial = 0,
+        $test = null,
         $signupFee = null,
         $hookName = 'mobbexSubscriptionRequest'
     ) {
@@ -76,7 +78,7 @@ class Subscription
                 'limit'       => (int) $limit,
                 'total'       => (float) $total,
                 'setupFee'    => (float) $signupFee,
-                'test'        => (bool) $this->settings['test'],
+                'test'        => $test ? $test : (bool) $this->settings['test'],
                 'reference'   => $this->reference = \Mobbex\Platform::$name . '_id:' . $id,
                 'options'     => [
                     'embed'    => $this->settings['embed'],
