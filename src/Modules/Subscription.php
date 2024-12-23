@@ -78,7 +78,7 @@ class Subscription
                 'limit'       => (int) $limit,
                 'total'       => (float) $total,
                 'setupFee'    => (float) $signupFee,
-                'test'        => $test ? $test : (bool) $this->settings['test'],
+                'test'        => isset($test) ? $test : (bool) $this->settings['test'],
                 'reference'   => $this->reference = \Mobbex\Platform::$name . '_id:' . $id,
                 'options'     => [
                     'embed'    => $this->settings['embed'],
