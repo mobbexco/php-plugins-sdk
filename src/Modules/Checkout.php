@@ -63,6 +63,7 @@ class Checkout
      *      @type string|null $streetNotes
      *  }
      * ]
+     * @param bool $paymentMethods Show or hide payment methods in checkout.
      * @param string $webhooksType Type of webhooks to send. Can be "all" | "none" | "final" | "intermediateAndFinal"
      * @param string $hookName Name of hook to execute when body is filtered.
      * @param string $description Allow to modify the default operation description in the console.
@@ -79,6 +80,7 @@ class Checkout
         $installments = [],
         $customer = [],
         $addresses = [],
+        $paymentMethods = false,
         $webhooksType = 'all',
         $hookName = 'mobbexCheckoutRequest',
         $description = null,
@@ -110,24 +112,25 @@ class Checkout
             'uri'    => 'checkout',
             'method' => 'POST',
             'body'   => \Mobbex\Platform::hook($hookName, true, [
-                'total'        => $this->settings['convert_currency'] ? \Mobbex\Repository::convertCurrency($total, $fromCurrency) : $total,
-                'webhook'      => $webhookUrl,
-                'return_url'   => $returnUrl,
-                'reference'    => $this->reference,
-                'description'  => $description ?: "Pedido #$id",
-                'intent'       => $this->settings['payment_mode'],
-                'test'         => (bool) $this->settings['test'],
-                'multicard'    => (bool) $this->settings['multicard'],
-                'multivendor'  => $this->settings['multivendor'],
-                'wallet'       => (bool) $this->settings['wallet'] && isset($customer['uid']),
-                'timeout'      => (int) $this->settings['timeout'],
-                'items'        => $items,
-                'merchants'    => isset($merchants) ? $merchants : [],
-                'installments' => $installments,
-                'customer'     => $customer,
-                'addresses'    => $addresses,
-                'webhooksType' => $webhooksType,
-                'currency'     => $currency,
+                'total'          => $this->settings['convert_currency'] ? \Mobbex\Repository::convertCurrency($total, $fromCurrency) : $total,
+                'webhook'        => $webhookUrl,
+                'return_url'     => $returnUrl,
+                'reference'      => $this->reference,
+                'description'    => $description ?: "Pedido #$id",
+                'intent'         => $this->settings['payment_mode'],
+                'test'           => (bool) $this->settings['test'],
+                'multicard'      => (bool) $this->settings['multicard'],
+                'multivendor'    => $this->settings['multivendor'],
+                'wallet'         => (bool) $this->settings['wallet'] && isset($customer['uid']),
+                'timeout'        => (int) $this->settings['timeout'],
+                'items'          => $items,
+                'merchants'      => isset($merchants) ? $merchants : [],
+                'installments'   => $installments,
+                'customer'       => $customer,
+                'addresses'      => $addresses,
+                'webhooksType'   => $webhooksType,
+                'currency'       => $currency,
+                'paymentMethods' => $paymentMethods,
                 'options'      => [
                     'embed'                           => (bool) $this->settings['embed'],
                     'embedVersion'                    => $this->settings['embed_version'],
