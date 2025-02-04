@@ -80,7 +80,6 @@ class Checkout
         $installments = [],
         $customer = [],
         $addresses = [],
-        $paymentMethods = false,
         $webhooksType = 'all',
         $hookName = 'mobbexCheckoutRequest',
         $description = null,
@@ -130,7 +129,7 @@ class Checkout
                 'addresses'      => $addresses,
                 'webhooksType'   => $webhooksType,
                 'currency'       => $currency,
-                'paymentMethods' => $paymentMethods,
+                'paymentMethods' => (bool) $this->settings['payment_methods'],
                 'options'      => [
                     'embed'                           => (bool) $this->settings['embed'],
                     'embedVersion'                    => $this->settings['embed_version'],

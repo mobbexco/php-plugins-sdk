@@ -48,6 +48,7 @@ final class Platform
         'advanced_plans_exclusivity'         => true,
         'convert_currency'                   => false,
         'show_no_interest_labels'            => true,
+        'payment_methods'                    => false,
     ];
 
     /** @var \Mobbex\Model\Cache */
