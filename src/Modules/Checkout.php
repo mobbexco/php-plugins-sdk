@@ -63,7 +63,6 @@ class Checkout
      *      @type string|null $streetNotes
      *  }
      * ]
-     * @param bool $paymentMethods Show or hide payment methods in checkout.
      * @param string $webhooksType Type of webhooks to send. Can be "all" | "none" | "final" | "intermediateAndFinal"
      * @param string $hookName Name of hook to execute when body is filtered.
      * @param string $description Allow to modify the default operation description in the console.
