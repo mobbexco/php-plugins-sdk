@@ -19,10 +19,6 @@ class Checkout
     /** URL to go to pay */
     public $url;
 
-    public $total;
-
-    public $currency;
-
     /** Available payment methods */
     public $methods;
 
@@ -71,6 +67,7 @@ class Checkout
      * @param string $webhooksType Type of webhooks to send. Can be "all" | "none" | "final" | "intermediateAndFinal"
      * @param string $hookName Name of hook to execute when body is filtered.
      * @param string $description Allow to modify the default operation description in the console.
+     * @param string $description Allow to modify the default operation description in the console.
      * @param string $fromCurrency Currency code of the actual total.
      * @param string $reference for the checkout.
      */
@@ -113,7 +110,7 @@ class Checkout
             'uri'    => 'checkout',
             'method' => 'POST',
             'body'   => \Mobbex\Platform::hook($hookName, true, [
-                'total'        => !empty($this->settings['final_currency']) ? \Mobbex\CurrencyHandler::convert($total, $currency, $this->settings['final_currency']) : $total,
+                'total'        => $this->settings['final_currency'] ? \Mobbex\Repository::convertCurrency($total, $currency, $this->settings['final_currency']) : $total,
                 'webhook'      => $webhookUrl,
                 'return_url'   => $returnUrl,
                 'reference'    => $this->reference,
