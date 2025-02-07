@@ -35,7 +35,7 @@ class Checkout
      * @param int|string $total Amount to pay.
      * @param string $returnUrl Post-payment redirect URL.
      * @param string $webhookUrl URL that recieve the Mobbex payment response.
-     * @param string[] $installments Use +uid:<uid> to include and -<reference> to exclude.
+     * @param string $currency ISO 4217 currency code.
      * @param array $items {
      *     @type int|string $total Total amount to pay for this item.
      *     @type int $quantity Quantity of items. Does not modify the displayed total.
@@ -44,6 +44,7 @@ class Checkout
      *     @type string|null $entity Entity configured to receive payment for this item.
      *     @type string|null $reference UID of related subscription. Use to enable subscription mode.
      * }
+     * @param string[] $installments Use +uid:<uid> to include and -<reference> to exclude.
      * @param array $customer {
      *     @type string $name
      *     @type string $email
@@ -75,6 +76,7 @@ class Checkout
         $total,
         $returnUrl,
         $webhookUrl,
+        $currency,
         $items = [],
         $installments = [],
         $customer = [],
@@ -82,9 +84,7 @@ class Checkout
         $webhooksType = 'all',
         $hookName = 'mobbexCheckoutRequest',
         $description = null,
-        $fromCurrency = null,
-        $reference = '',
-        $currency  = 'ARS'
+        $reference = ''
     ) {
         $this->settings  = \Mobbex\Platform::$settings;
         $this->reference = $reference ?: self::generateReference($id);
@@ -110,7 +110,7 @@ class Checkout
             'uri'    => 'checkout',
             'method' => 'POST',
             'body'   => \Mobbex\Platform::hook($hookName, true, [
-                'total'          => $this->settings['convert_currency'] ? \Mobbex\Repository::convertCurrency($total, $fromCurrency) : $total,
+                'total'          => $this->settings['final_currency'] ? \Mobbex\Repository::convertCurrency($total, $currency, $this->settings['final_currency']) : $total,
                 'webhook'        => $webhookUrl,
                 'return_url'     => $returnUrl,
                 'reference'      => $this->reference,
@@ -127,9 +127,9 @@ class Checkout
                 'customer'       => $customer,
                 'addresses'      => $addresses,
                 'webhooksType'   => $webhooksType,
-                'currency'       => $currency,
+                'currency'       => $this->settings['final_currency'] ?: $currency,
                 'paymentMethods' => (bool) $this->settings['payment_methods'],
-                'options'      => [
+                'options'        => [
                     'embed'                           => (bool) $this->settings['embed'],
                     'embedVersion'                    => $this->settings['embed_version'],
                     'domain'                          => \Mobbex\Platform::$domain,

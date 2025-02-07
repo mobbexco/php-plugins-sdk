@@ -243,17 +243,14 @@ final class Repository
      * 
      * @return float
      */
-    public static function convertCurrency($total, $from, $to = 'ARS')
+    public static function convertCurrency($total, $from, $to)
     {
-        if (empty($from) || $from === $to)
-            return (float) $total;
-
         $response = \Mobbex\Api::request([
             'method' => 'GET',
             'uri'    => "currency/convert?from=$from&to=$to&total=$total"
         ]) ?: [];
         
-        return $response;
+        return $response['result'];
     }
 
     /**
