@@ -47,6 +47,7 @@ final class Platform
         'sources_priority'                   => [],
         'advanced_plans_exclusivity'         => true,
         'show_no_interest_labels'            => true,
+        'payment_methods'                    => false,
         'final_currency'                     => null,
     ];
 
