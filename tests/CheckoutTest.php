@@ -22,6 +22,7 @@ class CheckoutTest extends \PHPUnit\Framework\TestCase
             100,
             $_ENV['SERVER_URL'] .'/return',
             $_ENV['SERVER_URL'] .'/webhook',
+            'ARS',
             [],
             [
                 'ahora_3'
@@ -46,6 +47,7 @@ class CheckoutTest extends \PHPUnit\Framework\TestCase
             100,
             $_ENV['SERVER_URL'] .'/return',
             $_ENV['SERVER_URL'] .'/webhook',
+            'ARS',
             [
                 [
                     'total'       => 100,
@@ -77,6 +79,7 @@ class CheckoutTest extends \PHPUnit\Framework\TestCase
             100,
             $_ENV['SERVER_URL'] .'/return',
             $_ENV['SERVER_URL'] .'/webhook',
+            'ARS',
             [
                 [
                     'total'       => 50,
@@ -118,6 +121,7 @@ class CheckoutTest extends \PHPUnit\Framework\TestCase
             100,
             $_ENV['SERVER_URL'] .'/return',
             $_ENV['SERVER_URL'] .'/webhook',
+            'ARS',
             [
                 [
                     'total'       => 50,
