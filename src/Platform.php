@@ -42,7 +42,7 @@ final class Platform
         'emit_customer_success_notification' => true,
         'emit_customer_failure_notification' => true,
         'emit_customer_waiting_notification' => true,
-        'embed_version'                      => '1.0.23',
+        'embed_version'                      => '1.2.0',
         'return_timeout'                     => '5',
         'sources_priority'                   => [],
         'advanced_plans_exclusivity'         => true,
