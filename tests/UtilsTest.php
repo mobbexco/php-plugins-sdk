@@ -44,7 +44,7 @@ class UtilsTest extends \PHPUnit\Framework\TestCase
             ['not-a-date'],
             [123456],
             [[]],
-            [new stdClass()],
+            [new \stdClass()],
             ['0000-00-00 00:00:00']
         ];
     }
