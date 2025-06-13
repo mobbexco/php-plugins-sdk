@@ -18,7 +18,7 @@ class SubscriptionTest extends \PHPUnit\Framework\TestCase
     public function testCanBeCreatedFromSimpleData()
     {
         $subscription = new \Mobbex\Modules\Subscription(
-            rand(1, 10000),
+            'php-plugins-sdk-test-' . rand(1, 1000000),
             null,
             'manual',
             $_ENV['SERVER_URL'] .'/return',
