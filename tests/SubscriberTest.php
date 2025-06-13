@@ -21,7 +21,7 @@ class SubscriberTest extends \PHPUnit\Framework\TestCase
     public function testCanBeCreatedFromSimpleData($subscription)
     {
         $subscriber = new \Mobbex\Modules\Subscriber(
-            rand(1, 10000),
+            'php-plugins-sdk-test-' . rand(1, 1000000),
             null,
             $subscription->uid,
             date('Y-m-d H:i:s'),

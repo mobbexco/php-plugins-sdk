@@ -63,3 +63,21 @@ function maybeDecodeJson(&$value) {
 
     return json_last_error() === JSON_ERROR_NONE ? $jsonDecoded : $value;
 }
+
+/**
+ * Convert a date string to a timestamp in milliseconds.
+ * 
+ * @example dateToTime('2023-10-01 12:00:00') returns 1696161600000
+ *
+ * @param mixed $date
+ * 
+ * @return float|null
+ */
+function dateToTime($date) {
+    if (!$date || !is_string($date))
+        return null;
+
+    $time = strtotime($date);
+
+    return $time > 0 ? $time * 1000 : null;
+}

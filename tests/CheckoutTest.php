@@ -18,7 +18,7 @@ class CheckoutTest extends \PHPUnit\Framework\TestCase
     public function testCanBeCreatedFromSimpleData()
     {
         $checkout = new \Mobbex\Modules\Checkout(
-            rand(1, 10000),
+            'php-plugins-sdk-test-' . rand(1, 1000000),
             100,
             $_ENV['SERVER_URL'] .'/return',
             $_ENV['SERVER_URL'] .'/webhook',
@@ -75,7 +75,7 @@ class CheckoutTest extends \PHPUnit\Framework\TestCase
     public function testCanBeCreatedUsingMultivendor()
     {
         $checkout = new \Mobbex\Modules\Checkout(
-            rand(1, 10000),
+            'php-plugins-sdk-test-' . rand(1, 1000000),
             100,
             $_ENV['SERVER_URL'] .'/return',
             $_ENV['SERVER_URL'] .'/webhook',
@@ -117,7 +117,7 @@ class CheckoutTest extends \PHPUnit\Framework\TestCase
     public function testCanBeCreatedUsingSubscriptionItems($subscription)
     {
         $checkout = new \Mobbex\Modules\Checkout(
-            rand(1, 10000),
+            'php-plugins-sdk-test-' . rand(1, 1000000),
             100,
             $_ENV['SERVER_URL'] .'/return',
             $_ENV['SERVER_URL'] .'/webhook',
