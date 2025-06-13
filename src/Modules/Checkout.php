@@ -51,6 +51,7 @@ class Checkout
      *     @type string $identification
      *     @type string|null $phone
      *     @type string|int|null $uid
+     *     @type string|null $createdAt Creation date of the customer (Unix timestamp in ms).
      * }
      * @param array $addresses [
      *  {
