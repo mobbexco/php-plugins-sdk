@@ -5,9 +5,7 @@
     stopOnFailure="false">
     <testsuites>
         <testsuite name="demo">
-            <file>./tests/SubscriptionTest.php</file>
-            <file>./tests/SubscriberTest.php</file>
-            <file>./tests/CheckoutTest.php</file>
+            <directory>./tests</directory>
         </testsuite>
     </testsuites>
     <php>
