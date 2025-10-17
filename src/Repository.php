@@ -94,7 +94,7 @@ final class Repository
             // Create field array data
             foreach ($source['installments']['list'] as $plan) {
                 $commonFields[$plan['reference']] = [
-                    'id'          => 'common_plan_' . $plan['reference'],
+                    'id'          => $plan['reference'],
                     'value'       => !in_array($plan['reference'], $checkedCommonPlans),
                     'label'       => $plan['name'],
                     'description' => $plan['description'],
@@ -117,7 +117,7 @@ final class Repository
             // Create field array data
             foreach ($source['installments'] as $plan) {
                 $advancedFields[$source['source']['reference']][] = [
-                    'id'          => 'advanced_plan_' . $plan['uid'],
+                    'id'          => $plan['uid'],
                     'value'       => in_array($plan['uid'], $checkedAdvancedPlans),
                     'label'       => $plan['name'],
                     'description' => $plan['description'],
