@@ -240,17 +240,18 @@ final class Repository
      * @param float|int $total Value to convert
      * @param string $from Initial currency
      * @param string $to Currency to convert
+     * @param bool $onlyResult true to get only converted value falso to get all convertion data
      * 
-     * @return float
+     * @return float|array depends onlyResult value
      */
-    public static function convertCurrency($total, $from, $to)
+    public static function convertCurrency($total, $from, $to, $onlyResult = true)
     {
         $response = \Mobbex\Api::request([
             'method' => 'GET',
             'uri'    => "currency/convert?from=$from&to=$to&total=$total"
         ]) ?: [];
         
-        return $response['result'];
+        return $onlyResult ? $response['result'] : $response;
     }
 
     /**

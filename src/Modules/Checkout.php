@@ -106,12 +106,20 @@ class Checkout
                 $merchants[] = ['uid' => $item['entity']];
         }
 
+        if ($this->settings['final_currency']) {
+            $convertionData = \Mobbex\Repository::convertCurrency($total, $currency, $this->settings['final_currency'], false);
+
+            $total      = $convertionData['result'];
+            $currency   = $this->settings['final_currency'];
+            $webhookUrl = $webhookUrl . "&convertion_rate={$convertionData['rate']}";
+        }
+
         // Make request and set response data as properties
         $this->setResponse(\Mobbex\Api::request([
             'uri'    => 'checkout',
             'method' => 'POST',
             'body'   => \Mobbex\Platform::hook($hookName, true, [
-                'total'          => $this->settings['final_currency'] ? \Mobbex\Repository::convertCurrency($total, $currency, $this->settings['final_currency']) : $total,
+                'total'          => (float) $total,
                 'webhook'        => $webhookUrl,
                 'return_url'     => $returnUrl,
                 'reference'      => $this->reference,
@@ -128,7 +136,7 @@ class Checkout
                 'customer'       => $customer,
                 'addresses'      => $addresses,
                 'webhooksType'   => $webhooksType,
-                'currency'       => $this->settings['final_currency'] ?: $currency,
+                'currency'       => $currency,
                 'paymentMethods' => (bool) $this->settings['payment_methods'],
                 'options'        => [
                     'embed'                           => (bool) $this->settings['embed'],
