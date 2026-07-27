@@ -51,7 +51,7 @@ class Api
         $curl = curl_init();
 
         curl_setopt_array($curl, [
-            CURLOPT_HTTPHEADER     => self::getHeaders(),
+            CURLOPT_HTTPHEADER     => self::getHeaders($data),
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_MAXREDIRS      => 10,
             CURLOPT_TIMEOUT        => 30,
@@ -98,17 +98,44 @@ class Api
 
     /**
      * Get headers to connect with Mobbex API.
-     * 
-     * @return string[] 
+     *
+     * Providers registered through \Mobbex\Platform::addHeaderProvider() receive
+     * the request data and may append headers — that is how integrity
+     * attestation attaches itself to checkout creation without any platform
+     * specific code.
+     *
+     * A provider that fails is skipped. None of them may break a request: an
+     * exception here would turn a degraded attestation into a broken payment.
+     *
+     * @param array $data Request data.
+     *
+     * @return string[]
      */
-    private static function getHeaders()
+    private static function getHeaders($data = [])
     {
-        return [
+        $headers = [
             'cache-control: no-cache',
             'content-type: application/json',
             'x-api-key: ' . self::$apiKey,
             'x-access-token: ' . self::$accessToken,
             'x-ecommerce-agent: ' . \Mobbex\Platform::toString(),
         ];
+
+        foreach (\Mobbex\Platform::$headers as $provider) {
+            try {
+                $extra = call_user_func($provider, $data);
+
+                if (is_array($extra))
+                    $headers = array_merge($headers, $extra);
+            } catch (\Exception $e) {
+                \Mobbex\Platform::log('error', 'Api > getHeaders | Header provider failed', $e->getMessage());
+            } catch (\Throwable $e) {
+                // PHP 7+ only; \Error does not extend \Exception. Not defined on
+                // 5.6, where this block simply never matches.
+                \Mobbex\Platform::log('error', 'Api > getHeaders | Header provider fatal', $e->getMessage());
+            }
+        }
+
+        return $headers;
     }
 }

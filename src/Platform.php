@@ -63,6 +63,16 @@ final class Platform
     /** Log execution callback */
     public static $log;
 
+    /**
+     * Extra header providers for \Mobbex\Api requests.
+     *
+     * Each entry is a callable receiving the request data and returning an array
+     * of "name: value" strings. Registered through addHeaderProvider().
+     *
+     * @var callable[]
+     */
+    public static $headers = [];
+
     /** Only log if debug mode is enabled */
     const LOG_MODE_DEBUG = 'debug';
 
@@ -107,9 +117,33 @@ final class Platform
     }
 
     /**
+     * Register a provider of extra headers for \Mobbex\Api requests.
+     *
+     * Idempotent: registering the same provider twice does not duplicate the
+     * headers it emits, which matters because plugins re-instantiate their
+     * module class on many requests.
+     *
+     * @param callable $provider Receives the request data, returns string[].
+     *
+     * @return void
+     */
+    public static function addHeaderProvider($provider)
+    {
+        if (!is_callable($provider))
+            return;
+
+        foreach (self::$headers as $registered) {
+            if ($registered == $provider)
+                return;
+        }
+
+        self::$headers[] = $provider;
+    }
+
+    /**
      * Retrieve platform versions info formatted as array.
-     * 
-     * @return array 
+     *
+     * @return array
      */
     public static function toArray()
     {
