@@ -177,8 +177,9 @@ class IntegrityTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Only checkout creation is attested. Attesting every call would multiply
-     * the cost for nothing, and the challenge request itself must never be.
+     * Only checkout and subscriber creation are attested. Attesting every call
+     * would multiply the cost for nothing, and the challenge request itself
+     * must never be.
      */
     public function testOnlyChecksoutRequestsAreAttested()
     {
@@ -186,6 +187,53 @@ class IntegrityTest extends \PHPUnit\Framework\TestCase
 
         $this->assertSame([], Attestation::getHeaders(['uri' => 'sources']));
         $this->assertSame([], Attestation::getHeaders([]));
+    }
+
+    /**
+     * Mobbex\Modules\Subscriber posts to subscriptions/{uid}/subscriber/{uid}.
+     * That exact call must attest, same as checkout, since it also provisions
+     * a paying object.
+     */
+    public function testSubscriberCreationIsAttested()
+    {
+        Attestation::init('prestashop', __DIR__, '1.0.0');
+
+        $headers = Attestation::getHeaders([
+            'method' => 'POST',
+            'uri'    => 'subscriptions/sub1/subscriber/usr1',
+        ]);
+
+        $this->assertContains('x-integrity-mode: static', $headers);
+    }
+
+    /**
+     * Everything else in the subscription domain shares the same URI prefix,
+     * and one case — reading a subscriber's executions — shares the exact same
+     * URI as creation, differing only by verb. None of these may attest: the
+     * pattern must stay anchored to the literal create call, not just "smells
+     * like a subscriber URI".
+     *
+     * @dataProvider subscriptionUrisNotInScopeProvider
+     */
+    public function testOtherSubscriptionRequestsAreNotAttested($data)
+    {
+        Attestation::init('prestashop', __DIR__, '1.0.0');
+
+        $this->assertSame([], Attestation::getHeaders($data));
+    }
+
+    public function subscriptionUrisNotInScopeProvider(): array
+    {
+        return [
+            'search_execution (same URI, GET)'  => [['method' => 'GET',  'uri' => 'subscriptions/sub1/subscriber/usr1']],
+            'execute_charge'                     => [['method' => 'POST', 'uri' => 'subscriptions/sub1/subscriber/usr1/execution']],
+            'activate/suspend action'            => [['method' => 'POST', 'uri' => 'subscriptions/sub1/subscriber/usr1/action/activate']],
+            'retry_charge action'                => [['method' => 'GET',  'uri' => 'subscriptions/sub1/subscriber/usr1/execution/eid1/action/retry']],
+            'search_subscriber (query string)'   => [['method' => 'GET',  'uri' => 'subscriptions/sub1/subscriber?page=0&search=x']],
+            // Same URI shape as modify_subscription: creating or updating the
+            // subscription itself is out of scope for this fix.
+            'subscription creation/modification' => [['method' => 'POST', 'uri' => 'subscriptions/sub1']],
+        ];
     }
 
     /**
