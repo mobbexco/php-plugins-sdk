@@ -13,12 +13,13 @@ namespace Mobbex\Integrity;
  * The first argument is the plugin's GitHub repo name and the second its
  * installation directory. Nothing else is platform specific: this class
  * registers itself as a header provider and attaches x-integrity-* to every
- * checkout request \Mobbex\Api makes.
+ * checkout creation and subscriber creation request \Mobbex\Api makes — see
+ * attests() for exactly which ones.
  *
  * Flow: ask the API for a challenge, then attach two values — an HMAC over the
  * byte ranges the server drew for this request, and a sum over the whole
  * release. The server recomputes both from the published artifact and refuses
- * the checkout when they differ.
+ * the request when they differ.
  *
  * Both are needed. The drawn ranges make the value impossible to precompute,
  * which a static checksum never was: it could be copied straight out of the
@@ -302,8 +303,16 @@ class Attestation
     /**
      * Whether this request should carry an attestation.
      *
-     * Only checkout creation. Attesting every call would multiply the cost for
-     * no gain, and the challenge request itself must never be attested.
+     * Checkout creation, plus subscriber creation (Mobbex\Modules\Subscriber).
+     * Attesting every call would multiply the cost for no gain, and the
+     * challenge request itself must never be attested.
+     *
+     * The subscriber pattern is anchored and method-gated on purpose: the same
+     * URI shape, subscriptions/{uid}/subscriber/{uid}, is also hit with GET to
+     * read a subscriber's executions, and sibling writes (execute a charge,
+     * activate/suspend, modify the subscription itself) add or change path
+     * segments. Only the exact create call — POST, nothing after the trailing
+     * uid — is in scope; the rest are deliberately left for later.
      *
      * @param array $data
      *
@@ -314,7 +323,15 @@ class Attestation
         if (empty(self::$platform) || empty(self::$rootDir) || empty(self::$version))
             return false;
 
-        return !empty($data['uri']) && strpos($data['uri'], 'checkout') !== false;
+        if (empty($data['uri']))
+            return false;
+
+        if (strpos($data['uri'], 'checkout') !== false)
+            return true;
+
+        return !empty($data['method'])
+            && strtoupper($data['method']) === 'POST'
+            && preg_match('#^subscriptions/[^/]+/subscriber/[^/]+$#', $data['uri']) === 1;
     }
 
     /**
