@@ -5,3 +5,4 @@ composer.lock
 .vscode/
 .idea/
 vendor/
+.codegraph/
